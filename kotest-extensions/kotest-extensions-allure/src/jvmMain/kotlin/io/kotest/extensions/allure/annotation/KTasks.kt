@@ -12,4 +12,4 @@ import java.lang.annotation.Inherited
     AnnotationTarget.ANNOTATION_CLASS,
     AnnotationTarget.CLASS
 )
-annotation class KJiras(val value: Array<KJira>)
+annotation class KTasks(val value: Array<KTask>)

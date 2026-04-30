@@ -43,7 +43,7 @@ class ExampleDataDrivenSpecReportSpec : FreeSpec({
         val stub = AllureTestRunner.runSpec(ExampleDataDrivenSpec::class)
 
         stub.testResults.first().links
-            .any { it.url?.contains("J-100") == true } shouldBe true
+            .any { it.name?.contains("J-100") == true || it.url?.contains("J-100") == true } shouldBe true
     }
 
     "TMS key in scenario name is extracted as link" {

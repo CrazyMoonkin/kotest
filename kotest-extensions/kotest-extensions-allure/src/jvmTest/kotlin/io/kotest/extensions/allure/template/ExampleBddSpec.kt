@@ -11,8 +11,8 @@ import io.qameta.allure.Link
 import io.qameta.allure.Links
 import io.kotest.extensions.allure.annotation.KAllureId
 import io.kotest.extensions.allure.annotation.KDescription
-import io.kotest.extensions.allure.annotation.KJira
-import io.kotest.extensions.allure.annotation.KJiras
+import io.kotest.extensions.allure.annotation.KTask
+import io.kotest.extensions.allure.annotation.KTasks
 import io.kotest.extensions.allure.annotation.KTag
 import io.kotest.extensions.allure.annotation.KTags
 import io.kotest.extensions.allure.step1
@@ -33,8 +33,8 @@ import io.kotest.extensions.allure.stepException2
 @Issues(
     value = [Issue("TTT-666"), Issue("TTT-777")]
 )
-@KJiras(
-    value = [KJira("TTT-111"), KJira("TTT-000")]
+@KTasks(
+    value = [KTask("TTT-111"), KTask("TTT-000")]
 )
 @KAllureId("888")
 @KTag("autotest")

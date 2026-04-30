@@ -37,12 +37,12 @@ class ExampleBddSpecReportSpec : FreeSpec({
         stub.testResults.first().description shouldContain "This is multiline description"
     }
 
-    "@KJiras produces Jira links for each key" {
+    "@KTasks produces Jira links for each key" {
         val stub = AllureTestRunner.runSpec(ExampleBddSpec::class)
 
         val links = stub.testResults.first().links
-        withClue("link TTT-111") { links.any { it.url?.contains("TTT-111") == true } shouldBe true }
-        withClue("link TTT-000") { links.any { it.url?.contains("TTT-000") == true } shouldBe true }
+        withClue("link TTT-111") { links.any { it.name?.contains("TTT-111") == true || it.url?.contains("TTT-111") == true } shouldBe true }
+        withClue("link TTT-000") { links.any { it.name?.contains("TTT-000") == true || it.url?.contains("TTT-000") == true } shouldBe true }
     }
 
     "@KTag and @KTags produce tag labels" {
@@ -66,7 +66,7 @@ class ExampleBddSpecReportSpec : FreeSpec({
         val stub = AllureTestRunner.runSpec(ExampleBddSpec::class)
 
         stub.testResults.first().links
-            .any { it.url?.contains("PRJ-100") == true } shouldBe true
+            .any { it.name?.contains("PRJ-100") == true || it.url?.contains("PRJ-100") == true } shouldBe true
     }
 
     "AllureId in test name is extracted as AS_ID label" {

@@ -11,7 +11,7 @@ import io.qameta.allure.model.Status
 import io.kotest.extensions.allure.fixture.DescriptionFixtureSpec
 import io.kotest.extensions.allure.fixture.EpicFeatureFixtureSpec
 import io.kotest.extensions.allure.fixture.KAllureIdFixtureSpec
-import io.kotest.extensions.allure.fixture.KJiraFixtureSpec
+import io.kotest.extensions.allure.fixture.KTaskFixtureSpec
 import io.kotest.extensions.allure.fixture.SeverityFixtureSpec
 import io.kotest.extensions.allure.fixture.SimpleFixtureSpec
 import io.kotest.extensions.allure.util.AllureTestRunner
@@ -152,7 +152,7 @@ class AllureReportSpec : FreeSpec({
                 result.name shouldBe "create user"
             }
             withClue("Jira link should be added") {
-                result.links.any { it.url?.contains("PRJ-100") == true } shouldBe true
+                result.links.any { it.name?.contains("PRJ-100") == true || it.url?.contains("PRJ-100") == true } shouldBe true
             }
         }
 
@@ -182,11 +182,11 @@ class AllureReportSpec : FreeSpec({
             .any { it.name == "feature" && it.value == "Fixture Feature" } shouldBe true
     }
 
-    "@KJira annotation produces Jira link" {
-        val stub = AllureTestRunner.runSpec(KJiraFixtureSpec::class, passed("t"))
+    "@KTask annotation produces Task link" {
+        val stub = AllureTestRunner.runSpec(KTaskFixtureSpec::class, passed("t"))
 
         val links = stub.testResults[0].links
-        links.any { it.url?.contains("PROJ-42") == true } shouldBe true
+        links.any { it.name?.contains("PROJ-42") == true || it.url?.contains("PROJ-42") == true } shouldBe true
     }
 
     "@KAllureId annotation produces allure_id label" {

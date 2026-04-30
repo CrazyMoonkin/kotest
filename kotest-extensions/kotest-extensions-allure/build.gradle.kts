@@ -16,14 +16,21 @@ kotlin {
       jvmTest {
          dependencies {
             implementation(libs.jackson.module.kotlin)
+            implementation(projects.kotestAssertions.kotestAssertionsTable)
+            implementation(projects.kotestProperty)
          }
       }
    }
 }
 
+tasks.withType<Test>().configureEach {
+   exclude ("io/kotest/extensions/allure/template/**")
+}
+
 allure {
    adapter.autoconfigure.set(false)
    adapter.autoconfigureListeners.set(false)
+   adapter.aspectjWeaver.set(true)
    adapter {
       frameworks {
          junit5.enabled.set(false)

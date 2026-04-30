@@ -7,7 +7,7 @@ import io.qameta.allure.Severity
 import io.qameta.allure.SeverityLevel
 import io.kotest.extensions.allure.annotation.KAllureId
 import io.kotest.extensions.allure.annotation.KDescription
-import io.kotest.extensions.allure.annotation.KJira
+import io.kotest.extensions.allure.annotation.KTask
 
 /**
  * Fixture specs used by [io.kotest.extensions.allure.report.AllureReportSpec].
@@ -20,8 +20,8 @@ class SimpleFixtureSpec : FreeSpec()
 @Feature("Fixture Feature")
 class EpicFeatureFixtureSpec : FreeSpec()
 
-@KJira("PROJ-42")
-class KJiraFixtureSpec : FreeSpec()
+@KTask("PROJ-42")
+class KTaskFixtureSpec : FreeSpec()
 
 @KAllureId("777")
 class KAllureIdFixtureSpec : FreeSpec()

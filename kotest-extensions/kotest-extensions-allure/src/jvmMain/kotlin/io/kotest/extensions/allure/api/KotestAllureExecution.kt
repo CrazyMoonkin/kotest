@@ -9,7 +9,7 @@ import io.qameta.allure.model.FixtureResult
 import io.qameta.allure.model.Status
 import io.kotest.extensions.allure.KotestAllureListener
 import io.kotest.extensions.allure.api.KotestAllureConstant.ALLURE_ID
-import io.kotest.extensions.allure.api.KotestAllureConstant.JIRA
+import io.kotest.extensions.allure.api.KotestAllureConstant.TASK
 import io.kotest.extensions.allure.api.KotestAllureConstant.TMS
 import io.kotest.extensions.allure.api.KotestAllureConstant.VAR
 import io.kotest.extensions.allure.api.KotestAllureExecution.PROJECT_UUID
@@ -164,10 +164,10 @@ object KotestAllureExecution {
 
    /**
     * Add ISSUE key to test name.
-    * @see KotestAllureConstant.JIRA
+    * @see KotestAllureConstant.TASK
     */
    fun String.task(issueKey: String) = "$this[$issueKey]"
-      .shouldBeDefaultPattern(JIRA.PATTERN.pattern, JIRA.PATTERN_DEFAULT, "issue", "allure.jira.pattern")
+      .shouldBeDefaultPattern(TASK.PATTERN.pattern, TASK.PATTERN_DEFAULT, "issue", "allure.task.pattern")
 
    /**
     * Add AllureID (TestOps) key to test name.

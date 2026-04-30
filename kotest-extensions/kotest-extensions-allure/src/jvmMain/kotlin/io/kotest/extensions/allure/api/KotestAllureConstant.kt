@@ -10,23 +10,22 @@ import io.kotest.extensions.allure.helper.InternalUtil.prop
 @Suppress("MemberVisibilityCanBePrivate")
 object KotestAllureConstant {
 
-    // TODO - Rename to TASK because not only JIRA
     /**
-     * @see VAR.ALLURE_JIRA_PATTERN
+     * @see VAR.ALLURE_TASK_PATTERN
      */
-    object JIRA {
+    object TASK {
 
-        const val LINK_TYPE = "jira"
+        const val LINK_TYPE = "task"
 
-        const val LABEL_NAME = "jira"
+        const val LABEL_NAME = "task"
 
         internal const val PATTERN_DEFAULT = "\\[([a-zA-Z]+-\\d+)]"
 
         /**
-         * Default Jira issue in Kotest Test name.
-         * See [VAR.ALLURE_JIRA_PATTERN]
+         * Default Task issue in Kotest Test name.
+         * See [VAR.ALLURE_TASK_PATTERN]
          */
-        val PATTERN: Regex = VAR.ALLURE_JIRA_PATTERN.prop(PATTERN_DEFAULT).toRegex()
+        val PATTERN: Regex = VAR.ALLURE_TASK_PATTERN.prop(PATTERN_DEFAULT).toRegex()
     }
 
     /**
@@ -70,10 +69,10 @@ object KotestAllureConstant {
         const val ALLURE_LIFECYCLE_CLASS = "allure.lifecycle.class"
 
         /**
-         * Set jira ticket pattern in Kotest Test name.
+         * Set task ticket pattern in Kotest Test name.
          * Default = '\[([a-zA-Z]+-\d+)]' like `[KT-100]`
          */
-        const val ALLURE_JIRA_PATTERN = "allure.jira.pattern"
+        const val ALLURE_TASK_PATTERN = "allure.task.pattern"
 
         /**
          * Set allure id (TestOps) pattern in Kotest Test name.
@@ -132,7 +131,7 @@ object KotestAllureConstant {
          *
          *  @see VAR.ALLURE_ID_PATTERN
          *  @see VAR.ALLURE_TMS_PATTERN
-         *  @see VAR.ALLURE_JIRA_PATTERN
+         *  @see VAR.ALLURE_TASK_PATTERN
          */
         const val TEST_NAME_AUTO_CLEAN_UP = "kotest.allure.meta.cleanup"
     }

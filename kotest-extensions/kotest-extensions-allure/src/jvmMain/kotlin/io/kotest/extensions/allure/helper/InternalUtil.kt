@@ -153,7 +153,7 @@ internal object InternalUtil {
 
     private fun String.allureMetaCleanUp() =
         if (isAllureMetaCleanUp)
-            replace(KotestAllureConstant.JIRA.PATTERN, "")
+            replace(KotestAllureConstant.TASK.PATTERN, "")
                 .replace(KotestAllureConstant.TMS.PATTERN, "")
                 .replace(KotestAllureConstant.ALLURE_ID.PATTERN, "")
                 .trim()

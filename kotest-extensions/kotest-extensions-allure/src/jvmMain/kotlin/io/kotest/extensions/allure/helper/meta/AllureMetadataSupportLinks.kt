@@ -9,8 +9,8 @@ import io.qameta.allure.model.Link
 import io.qameta.allure.util.AnnotationUtils.getLinks
 import io.qameta.allure.util.ResultsUtils.createLink
 import io.qameta.allure.util.ResultsUtils.createTmsLink
-import io.kotest.extensions.allure.annotation.KJiras
-import io.kotest.extensions.allure.api.KotestAllureConstant.JIRA
+import io.kotest.extensions.allure.annotation.KTasks
+import io.kotest.extensions.allure.api.KotestAllureConstant.TASK
 import io.kotest.extensions.allure.api.KotestAllureConstant.TMS
 import io.kotest.extensions.allure.helper.meta.AllureMetadataSupport.findAll
 import kotlin.reflect.KClass
@@ -26,13 +26,13 @@ internal object AllureMetadataSupportLinks {
 
     internal inline val KClass<out Spec>?.tmsLinks: Collection<Link> get() = this?.findAnnotation<TmsLinks>()?.value?.let { getLinks(it.toSet()) } ?: emptySet()
 
-    internal inline val KClass<out Spec>?.jiraLinks: Collection<Link> get() = this?.findAnnotation<KJiras>()?.value?.let { getLinks(it.toSet()) } ?: emptySet()
+    internal inline val KClass<out Spec>?.taskLinks: Collection<Link> get() = this?.findAnnotation<KTasks>()?.value?.let { getLinks(it.toSet()) } ?: emptySet()
 
-    internal inline val Descriptor?.jiraLinksFromTestName: Collection<Link>
+    internal inline val Descriptor?.taskLinksFromTestName: Collection<Link>
         get() = this?.run {
             id.value
-                .findAll(JIRA.PATTERN)
-                .map { key -> createLink(key, key, null, JIRA.LINK_TYPE) }
+                .findAll(TASK.PATTERN)
+                .map { key -> createLink(key, key, null, TASK.LINK_TYPE) }
                 .toList()
         }.orEmpty()
 

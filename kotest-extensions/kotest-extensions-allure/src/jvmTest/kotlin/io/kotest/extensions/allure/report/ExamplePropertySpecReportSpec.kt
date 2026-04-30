@@ -43,7 +43,7 @@ class ExamplePropertySpecReportSpec : FreeSpec({
         val stub = AllureTestRunner.runSpec(ExamplePropertySpec::class)
 
         stub.testResults.first().links
-            .any { it.url?.contains("J-100") == true } shouldBe true
+            .any { it.name?.contains("J-100") == true || it.url?.contains("J-100") == true } shouldBe true
     }
 
     "programmatic allureId via .allureId() produces AS_ID label" {

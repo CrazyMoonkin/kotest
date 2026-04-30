@@ -7,12 +7,12 @@ import io.qameta.allure.model.Link
 import io.kotest.extensions.allure.helper.meta.AllureMetadataSupportDescriptions.kDescription
 import io.kotest.extensions.allure.helper.meta.AllureMetadataSupportLabels.allureIdsFromTestName
 import io.kotest.extensions.allure.helper.meta.AllureMetadataSupportLabels.epicFromPkg
-import io.kotest.extensions.allure.helper.meta.AllureMetadataSupportLabels.jiraLabelsFromTestName
+import io.kotest.extensions.allure.helper.meta.AllureMetadataSupportLabels.taskLabelsFromTestName
 import io.kotest.extensions.allure.helper.meta.AllureMetadataSupportLabels.labelAnnotations
 import io.kotest.extensions.allure.helper.meta.AllureMetadataSupportLabels.severity
 import io.kotest.extensions.allure.helper.meta.AllureMetadataSupportLinks.issues
-import io.kotest.extensions.allure.helper.meta.AllureMetadataSupportLinks.jiraLinks
-import io.kotest.extensions.allure.helper.meta.AllureMetadataSupportLinks.jiraLinksFromTestName
+import io.kotest.extensions.allure.helper.meta.AllureMetadataSupportLinks.taskLinks
+import io.kotest.extensions.allure.helper.meta.AllureMetadataSupportLinks.taskLinksFromTestName
 import io.kotest.extensions.allure.helper.meta.AllureMetadataSupportLinks.linkAnnotations
 import io.kotest.extensions.allure.helper.meta.AllureMetadataSupportLinks.links
 import io.kotest.extensions.allure.helper.meta.AllureMetadataSupportLinks.tmsLinks
@@ -29,7 +29,7 @@ internal class AllureMetadata(
         add(specClass.severity)
         add(specClass.epicFromPkg)
         addAll(description.allureIdsFromTestName)
-        addAll(description.jiraLabelsFromTestName)
+        addAll(description.taskLabelsFromTestName)
     }.filterNotNull()
 
     internal val allLinks: List<Link> = buildList {
@@ -37,14 +37,13 @@ internal class AllureMetadata(
         addAll(specClass.issues)
         addAll(specClass.links)
         addAll(specClass.tmsLinks)
-        addAll(specClass.jiraLinks)
-        addAll(description.jiraLinksFromTestName)
+        addAll(specClass.taskLinks)
+        addAll(description.taskLinksFromTestName)
         addAll(description.tmsLinksFromTestName)
     }.asSequence()
-        .filterNot { it.url.isNullOrBlank() }
-        .distinctBy { it.url }
-        .onEach { if (it.name.isBlank()) it.name = it.url }
-        .distinct()
+        .filterNot { it.url.isNullOrBlank() && it.name.isNullOrBlank() }
+        .onEach { if (it.name.isNullOrBlank()) it.name = it.url }
+        .distinctBy { it.url.orEmpty() + "|" + it.name.orEmpty() }
         .toList()
 
     internal val allDescriptions: String = buildList {

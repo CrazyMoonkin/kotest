@@ -1,12 +1,12 @@
 package io.kotest.extensions.allure.util
 
-import io.kotest.core.config.AbstractProjectConfig
 import io.kotest.core.descriptors.Descriptor
 import io.kotest.core.descriptors.DescriptorId
 import io.kotest.core.descriptors.toDescriptor
 import io.kotest.core.names.TestName
 import io.kotest.core.spec.DslDrivenSpec
 import io.kotest.core.spec.Spec
+import io.kotest.core.spec.SpecRef
 import io.kotest.core.test.TestCase
 import io.kotest.core.test.TestType
 import io.kotest.engine.TestEngineLauncher
@@ -59,14 +59,12 @@ object AllureTestRunner {
      */
     suspend fun runSpec(klass: KClass<out Spec>): AllureResultsWriterStub =
         withStub {
-            val projectConfig = object : AbstractProjectConfig() {
-                override val extensions = listOf(KotestAllureListener)
-            }
             TestEngineLauncher()
-                .withProjectConfig(projectConfig)
-                .withClasses(klass)
+                .addExtension(KotestAllureListener)
+                .withSpecRefs(SpecRef.Reference(klass))
                 .withListener(CollectingTestEngineListener())
-                .async()
+                .withoutEnvFilters()
+                .execute()
         }
 
     /**
