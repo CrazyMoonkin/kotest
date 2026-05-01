@@ -3,7 +3,6 @@ package io.kotest.extensions.allure.api
 import io.kotest.core.descriptors.Descriptor
 import io.kotest.core.spec.Spec
 import io.kotest.core.test.TestCase
-import io.qameta.allure.Allure
 import io.qameta.allure.AllureLifecycle
 import io.qameta.allure.model.FixtureResult
 import io.qameta.allure.model.Status
@@ -11,14 +10,11 @@ import io.kotest.extensions.allure.KotestAllureListener
 import io.kotest.extensions.allure.api.KotestAllureConstant.AllureId
 import io.kotest.extensions.allure.api.KotestAllureConstant.Task
 import io.kotest.extensions.allure.api.KotestAllureConstant.Tms
-import io.kotest.extensions.allure.api.KotestAllureConstant.Var
 import io.kotest.extensions.allure.api.KotestAllureExecution.containerUuid
 import io.kotest.extensions.allure.api.KotestAllureExecution.projectUuid
 import io.kotest.extensions.allure.api.KotestAllureExecution.setUpFixture
-import io.kotest.extensions.allure.helper.AllureConfig.prop
+import io.kotest.extensions.allure.helper.AllureLifecycleBootstrap
 import io.kotest.extensions.allure.helper.AllureResultPopulator.safeFileName
-import io.kotest.extensions.allure.helper.logger
-import java.io.File
 import java.util.UUID
 import kotlin.reflect.KClass
 
@@ -28,12 +24,11 @@ import kotlin.reflect.KClass
  * or project execution root uuid - [projectUuid]
  */
 object KotestAllureExecution {
-   private val log = logger<KotestAllureExecution>()
 
    /**
     * Get current [AllureLifecycle] or extended version for example [Slf4JAllureLifecycle]
     */
-   var allure: AllureLifecycle = initAllureLifecycle()
+   var allure: AllureLifecycle = AllureLifecycleBootstrap.lifecycle
       internal set
 
    /**
@@ -193,27 +188,4 @@ object KotestAllureExecution {
             "But you have changed default pattern '$varName=$yourPattern' " +
             "You should implement your own 'fun String.${funName}My(key: String)' extension function"
       )
-
-   private fun initAllureLifecycle(): AllureLifecycle {
-      val resultDir = Var.ALLURE_RESULTS_DIR.prop("build/allure-results")
-      val slf4jEnabled = Var.ALLURE_SLF4J_LOG.prop(true)
-      val allureClassRef: String = Var.ALLURE_LIFECYCLE_CLASS.prop("")
-
-      System.setProperty(Var.ALLURE_RESULTS_DIR, resultDir)
-      clearPreviousResults(File(resultDir))
-
-      return (if (allureClassRef.isNotBlank())
-         runCatching { Class.forName(allureClassRef).getConstructor().newInstance() as AllureLifecycle }
-            .onFailure { throw RuntimeException("Cannot create AllureLifecycle from class '$allureClassRef'", it) }
-            .getOrThrow()
-      else (if (slf4jEnabled) Slf4JAllureLifecycle(log) else AllureLifecycle())).also { Allure.setLifecycle(it) }
-   }
-
-   private fun clearPreviousResults(dir: File) {
-      if (Var.CLEAR_ALLURE_RESULTS_DIR.prop(true)) {
-         if (dir.exists() && dir.isDirectory) {
-            runCatching { dir.deleteRecursively() }.getOrElse { log.error("Cannot delete '$dir'", it) }
-         }
-      }
-   }
 }

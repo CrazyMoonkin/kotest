@@ -21,6 +21,7 @@ import io.kotest.extensions.allure.api.KotestAllureExecution.allure
 import io.kotest.extensions.allure.api.KotestAllureExecution.executionStartCallback
 import io.kotest.extensions.allure.api.KotestAllureExecution.projectUuid
 import io.kotest.extensions.allure.api.KotestAllureExecution.containerUuid
+import io.kotest.extensions.allure.helper.AllureLifecycleBootstrap
 import io.kotest.extensions.allure.helper.InternalExecutionModel.startScenario
 import io.kotest.extensions.allure.helper.InternalExecutionModel.startStep
 import io.kotest.extensions.allure.helper.InternalExecutionModel.stopScenario
@@ -46,6 +47,7 @@ object KotestAllureListener : ProjectListener,
 
    override suspend fun beforeProject() {
       debug("beforeProject")
+      AllureLifecycleBootstrap.clearPreviousResults()
 
       TestResultContainer().run {
          uuid = projectUuid
