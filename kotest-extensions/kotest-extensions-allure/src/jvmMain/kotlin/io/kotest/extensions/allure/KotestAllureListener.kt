@@ -23,7 +23,6 @@ import io.kotest.extensions.allure.api.KotestAllureExecution.projectUuid
 import io.kotest.extensions.allure.api.KotestAllureExecution.containerUuid
 import io.kotest.extensions.allure.helper.AllureExecutionState
 import io.kotest.extensions.allure.helper.AllureLifecycleBootstrap
-import io.kotest.extensions.allure.helper.KotestTestCase
 import io.kotest.extensions.allure.helper.logger
 import kotlin.reflect.KClass
 import kotlin.time.Duration.Companion.seconds
@@ -134,7 +133,7 @@ object KotestAllureListener : ProjectListener,
          name = specContainerUuid
       }
       allure.startTestContainer(projectUuid, specContainerResult)
-      val informationTestCase = KotestTestCase(
+      val informationTestCase = TestCase(
          descriptor = TestDescriptor(kclass.toDescriptor(), DescriptorId(message)),
          name = TestName(kclass.bestName(), false, false, message, null, false),
          spec = object : DslDrivenSpec() {},

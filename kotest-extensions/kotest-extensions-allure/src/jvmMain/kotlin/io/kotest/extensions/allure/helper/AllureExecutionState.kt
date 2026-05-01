@@ -6,6 +6,7 @@ import io.kotest.core.source.SourceRef
 import io.kotest.core.source.SourceRef.ClassLineSource
 import io.kotest.core.source.SourceRef.ClassSource
 import io.kotest.core.source.SourceRef.None
+import io.kotest.core.test.TestCase
 import io.kotest.engine.test.TestResult
 import io.kotest.engine.test.TestResult.Success
 import io.qameta.allure.model.StepResult
@@ -37,7 +38,7 @@ internal class AllureExecutionState {
    private val testUuidMap: MutableMap<Descriptor, String> = ConcurrentHashMap()
    private val iterationMap: MutableMap<Descriptor, Iteration> = ConcurrentHashMap()
 
-   internal fun startScenario(testCase: KotestTestCase): String =
+   internal fun startScenario(testCase: TestCase): String =
       testUuidMap.computeIfAbsent(testCase.descriptor) { uuid() }
          .also { uuid ->
             val index = when (dataDrivenSupport) {
@@ -55,7 +56,7 @@ internal class AllureExecutionState {
             allure.startTestCase(uuid)
          }
 
-   internal fun stopScenario(testCase: KotestTestCase, testResult: KotestTestResult, prune: Boolean = true) {
+   internal fun stopScenario(testCase: TestCase, testResult: TestResult, prune: Boolean = true) {
       val uuid = testUuidMap[testCase.descriptor]
       if (uuid == null) {
          log.error("Cannot stop Scenario '$testCase' because it hasn't been started")
@@ -69,7 +70,7 @@ internal class AllureExecutionState {
       testUuidMap.remove(testCase.descriptor)
    }
 
-   internal fun startStep(testCase: KotestTestCase) {
+   internal fun startStep(testCase: TestCase) {
       testUuidMap.computeIfAbsent(testCase.descriptor) { uuid() }
          .also { uuid ->
             if (dataDrivenSupport) processIteration(testCase)
@@ -85,7 +86,7 @@ internal class AllureExecutionState {
          }
    }
 
-   internal fun stopStep(testCase: KotestTestCase, testResult: KotestTestResult) {
+   internal fun stopStep(testCase: TestCase, testResult: TestResult) {
       val uuid = testUuidMap[testCase.descriptor]
       if (uuid == null) {
          log.error("Cannot stop Step '$testCase' because it hasn't been started")
@@ -113,35 +114,35 @@ internal class AllureExecutionState {
    //// PRIVATE ////
    /////////////////
 
-   private fun processSkip(testCase: KotestTestCase) {
+   private fun processSkip(testCase: TestCase) {
       val scenario = testCase.scenario ?: return
       val scenarioUuid = testUuidMap[scenario] ?: return
       allure.updateTestCase(scenarioUuid) { processSkipResult(it) }
    }
 
-   private fun processIteration(testCase: KotestTestCase) {
+   private fun processIteration(testCase: TestCase) {
       val scenario = testCase.scenario ?: return
       val iteration = iterationMap[scenario] ?: return
       if (iteration.isNotStarted) {
-         iteration.start(testCase)
+         iterationMap[scenario] = iteration.startedAt(testCase)
          return
       }
       if (testCase.isNewIteration(iteration)) {
          stopScenario(iteration.scenario, Success(0.milliseconds), false)
          startScenario(iteration.scenario)
-         iteration.start(testCase)
+         iterationMap[scenario] = iteration.startedAt(testCase)
       }
    }
 
-   private fun KotestTestCase.isNewIteration(iteration: Iteration): Boolean =
+   private fun TestCase.isNewIteration(iteration: Iteration): Boolean =
       source.lineNumber() <= iteration.startLineNumber
 
-   private val KotestTestCase.scenario: Descriptor?
+   private val TestCase.scenario: Descriptor?
       get() = descriptor.parents().firstOrNull { it is TestDescriptor }
 
-   private val KotestTestCase.parentUuid: String? get() = testUuidMap[descriptor.parent]
+   private val TestCase.parentUuid: String? get() = testUuidMap[descriptor.parent]
 
-   private val KotestTestResult.needPassOnTop: Boolean
+   private val TestResult.needPassOnTop: Boolean
       get() = when (this) {
          is TestResult.Error -> true
          is TestResult.Failure -> true
@@ -150,14 +151,12 @@ internal class AllureExecutionState {
       }
 }
 
-private data class Iteration(val index: Int, val scenario: KotestTestCase, var startLineNumber: Int) {
+private data class Iteration(val index: Int, val scenario: TestCase, val startLineNumber: Int) {
    val isNotStarted get() = startLineNumber <= 0
-   fun start(step: KotestTestCase) {
-      startLineNumber = step.source.lineNumber()
-   }
+   fun startedAt(step: TestCase): Iteration = copy(startLineNumber = step.source.lineNumber())
 
    companion object {
-      fun next(scenario: KotestTestCase, previous: Iteration?) =
+      fun next(scenario: TestCase, previous: Iteration?) =
          Iteration(previous?.index?.inc() ?: 0, scenario, 0)
    }
 }

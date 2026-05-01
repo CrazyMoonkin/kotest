@@ -17,22 +17,22 @@ open class Slf4JAllureLifecycle(private val logger: Logger) : AllureLifecycle() 
       super.startStep(parentUuid, uuid, result).also { logger.info("STEP: ${result.log}") }
 
    override fun addAttachment(name: String?, type: String?, fileExtension: String?, stream: InputStream?) {
-      when (logger.isDebugEnabled) {
-         true -> stream.use { io ->
-            runCatching { io?.readBytes() ?: "".toByteArray(UTF_8) }
-               .getOrElse { it.localizedMessage.toByteArray(UTF_8) }
-         }.apply {
-            super.addAttachment(name, type, fileExtension, this.inputStream()).also {
-               logger.debug("ATTACHMENT: $name $type $fileExtension\n{}", this.toString(UTF_8).take(2000))
-            }
-         }
-         false -> super.addAttachment(name, type, fileExtension, stream)
+      if (!logger.isDebugEnabled) {
+         super.addAttachment(name, type, fileExtension, stream)
+         return
       }
+      // Buffer the payload so the original stream can be re-served while we also peek into it for the debug log.
+      val bytes = stream.use { it?.readBytesOrError() ?: ByteArray(0) }
+      super.addAttachment(name, type, fileExtension, bytes.inputStream())
+      logger.debug("ATTACHMENT: $name $type $fileExtension\n{}", String(bytes, UTF_8).take(2000))
    }
 
    /////////////////
    //// PRIVATE ////
    /////////////////
+
+   private fun InputStream.readBytesOrError(): ByteArray =
+      runCatching { readBytes() }.getOrElse { (it.localizedMessage ?: "").toByteArray(UTF_8) }
 
    private val StepResult?.log
       get() = when (this) {
