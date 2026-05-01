@@ -2,7 +2,7 @@ package io.kotest.extensions.allure.api
 
 import io.qameta.allure.AllureLifecycle
 import io.kotest.extensions.allure.api.KotestAllureConstant.Var.ALLURE_RESULTS_DIR
-import io.kotest.extensions.allure.helper.InternalUtil.prop
+import io.kotest.extensions.allure.helper.AllureConfig.prop
 
 /**
  * Constants API.

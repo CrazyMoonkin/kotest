@@ -15,16 +15,16 @@ import io.kotest.extensions.allure.KotestAllureListener.log
 import io.kotest.extensions.allure.api.KotestAllureConstant.Var.DATA_DRIVEN_SUPPORT
 import io.kotest.extensions.allure.api.KotestAllureExecution.allure
 import io.kotest.extensions.allure.api.KotestAllureExecution.containerUuid
+import io.kotest.extensions.allure.helper.AllureConfig.prop
+import io.kotest.extensions.allure.helper.AllureResultPopulator.updateStepResult
+import io.kotest.extensions.allure.helper.AllureResultPopulator.updateTestResult
+import io.kotest.extensions.allure.helper.AllureStatusMapper.processSkipResult
+import io.kotest.extensions.allure.helper.AllureStatusMapper.toAllure
+import io.kotest.extensions.allure.helper.AllureStatusMapper.updateStatus
 import io.kotest.extensions.allure.helper.InternalExecutionModel.Iteration.Factory.scenario
 import io.kotest.extensions.allure.helper.InternalExecutionModel.startStep
-import io.kotest.extensions.allure.helper.InternalUtil.processSkipResult
-import io.kotest.extensions.allure.helper.InternalUtil.prop
-import io.kotest.extensions.allure.helper.InternalUtil.toAllure
-import io.kotest.extensions.allure.helper.InternalUtil.toOptional
-import io.kotest.extensions.allure.helper.InternalUtil.updateStatus
-import io.kotest.extensions.allure.helper.InternalUtil.updateStepResult
-import io.kotest.extensions.allure.helper.InternalUtil.updateTestResult
 import io.kotest.extensions.allure.helper.meta.AllureMetadata
+import java.util.Optional
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.Duration.Companion.milliseconds
@@ -234,6 +234,8 @@ object InternalExecutionModel {
    }
 
    private fun uuid(): String = UUID.randomUUID().toString()
+
+   private inline fun <reified T> T.toOptional() = Optional.ofNullable(this)
 
    private fun KotestTestCase.isNewIteration(iteration: Iteration): Boolean =
       source.lineNumber() <= iteration.startLineNumber

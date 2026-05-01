@@ -15,9 +15,9 @@ import io.kotest.extensions.allure.api.KotestAllureConstant.Var
 import io.kotest.extensions.allure.api.KotestAllureExecution.containerUuid
 import io.kotest.extensions.allure.api.KotestAllureExecution.projectUuid
 import io.kotest.extensions.allure.api.KotestAllureExecution.setUpFixture
-import io.kotest.extensions.allure.helper.InternalUtil.logger
-import io.kotest.extensions.allure.helper.InternalUtil.prop
-import io.kotest.extensions.allure.helper.InternalUtil.safeFileName
+import io.kotest.extensions.allure.helper.AllureConfig.prop
+import io.kotest.extensions.allure.helper.AllureResultPopulator.safeFileName
+import io.kotest.extensions.allure.helper.logger
 import java.io.File
 import java.util.UUID
 import kotlin.reflect.KClass

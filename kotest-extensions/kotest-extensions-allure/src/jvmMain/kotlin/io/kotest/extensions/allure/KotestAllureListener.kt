@@ -25,7 +25,7 @@ import io.kotest.extensions.allure.helper.InternalExecutionModel.startScenario
 import io.kotest.extensions.allure.helper.InternalExecutionModel.startStep
 import io.kotest.extensions.allure.helper.InternalExecutionModel.stopScenario
 import io.kotest.extensions.allure.helper.InternalExecutionModel.stopStep
-import io.kotest.extensions.allure.helper.InternalUtil.logger
+import io.kotest.extensions.allure.helper.logger
 import io.kotest.extensions.allure.helper.KotestTestCase
 import kotlin.reflect.KClass
 import kotlin.time.Duration.Companion.seconds
