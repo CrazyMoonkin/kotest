@@ -15,7 +15,7 @@ import io.kotest.engine.test.TestResult
 import io.qameta.allure.AllureLifecycle
 import io.kotest.extensions.allure.KotestAllureListener
 import io.kotest.extensions.allure.api.KotestAllureExecution
-import io.kotest.extensions.allure.helper.InternalExecutionModel
+import io.kotest.extensions.allure.helper.AllureExecutionState
 import kotlin.reflect.KClass
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -48,8 +48,9 @@ fun broken(name: String, cause: Throwable = RuntimeException("Unexpected error")
  * - [runSpec] with [FakeTest]s — injects a synthetic test tree without running test bodies,
  *   useful for testing listener behavior in isolation.
  *
- * In both modes the outer Kotest run is unaffected: [KotestAllureExecution.allure] and
- * [InternalExecutionModel] state are saved before and fully restored after the inner run.
+ * In both modes the outer Kotest run is unaffected: [KotestAllureExecution.allure] is swapped
+ * to an in-memory stub and [KotestAllureListener.state] is replaced with a fresh
+ * [AllureExecutionState]; both are restored in `finally`.
  */
 object AllureTestRunner {
 
@@ -94,14 +95,14 @@ object AllureTestRunner {
    private suspend fun withStub(block: suspend () -> Unit): AllureResultsWriterStub {
       val stub = AllureResultsWriterStub()
       val outerLifecycle = KotestAllureExecution.allure
-      val outerSnapshot = InternalExecutionModel.snapshotTestUuidMap()
+      val outerState = KotestAllureListener.state
       try {
          KotestAllureExecution.allure = AllureLifecycle(stub)
-         InternalExecutionModel.resetForTest()
+         KotestAllureListener.state = AllureExecutionState()
          block()
       } finally {
          KotestAllureExecution.allure = outerLifecycle
-         InternalExecutionModel.restoreTestUuidMap(outerSnapshot)
+         KotestAllureListener.state = outerState
       }
       return stub
    }

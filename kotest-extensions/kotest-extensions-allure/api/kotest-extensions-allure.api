@@ -120,10 +120,6 @@ public class io/kotest/extensions/allure/api/Slf4JAllureLifecycle : io/qameta/al
 	public fun startStep (Ljava/lang/String;Ljava/lang/String;Lio/qameta/allure/model/StepResult;)V
 }
 
-public final class io/kotest/extensions/allure/helper/InternalExecutionModel {
-	public static final field INSTANCE Lio/kotest/extensions/allure/helper/InternalExecutionModel;
-}
-
 public final class io/kotest/extensions/allure/helper/meta/AllureMetadataSupport {
 	public static final field INSTANCE Lio/kotest/extensions/allure/helper/meta/AllureMetadataSupport;
 }

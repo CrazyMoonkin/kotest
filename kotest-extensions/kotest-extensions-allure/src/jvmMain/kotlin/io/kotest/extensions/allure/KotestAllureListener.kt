@@ -21,13 +21,10 @@ import io.kotest.extensions.allure.api.KotestAllureExecution.allure
 import io.kotest.extensions.allure.api.KotestAllureExecution.executionStartCallback
 import io.kotest.extensions.allure.api.KotestAllureExecution.projectUuid
 import io.kotest.extensions.allure.api.KotestAllureExecution.containerUuid
+import io.kotest.extensions.allure.helper.AllureExecutionState
 import io.kotest.extensions.allure.helper.AllureLifecycleBootstrap
-import io.kotest.extensions.allure.helper.InternalExecutionModel.startScenario
-import io.kotest.extensions.allure.helper.InternalExecutionModel.startStep
-import io.kotest.extensions.allure.helper.InternalExecutionModel.stopScenario
-import io.kotest.extensions.allure.helper.InternalExecutionModel.stopStep
-import io.kotest.extensions.allure.helper.logger
 import io.kotest.extensions.allure.helper.KotestTestCase
+import io.kotest.extensions.allure.helper.logger
 import kotlin.reflect.KClass
 import kotlin.time.Duration.Companion.seconds
 
@@ -44,6 +41,12 @@ object KotestAllureListener : ProjectListener,
    IgnoredSpecListener,
    IgnoredTestListener {
    internal val log = logger<KotestAllureListener>()
+
+   /**
+    * Per-execution state. Kept as `var` so tests can swap in a fresh instance to isolate
+    * inner runs from the outer Kotest engine; production code never reassigns it.
+    */
+   internal var state: AllureExecutionState = AllureExecutionState()
 
    override suspend fun beforeProject() {
       debug("beforeProject")
@@ -86,14 +89,14 @@ object KotestAllureListener : ProjectListener,
 
    override suspend fun beforeAny(testCase: TestCase) {
       debug("beforeAny - $testCase")
-      if (testCase.descriptor.isRootTest()) startScenario(testCase)
-      else startStep(testCase)
+      if (testCase.descriptor.isRootTest()) state.startScenario(testCase)
+      else state.startStep(testCase)
    }
 
    override suspend fun afterAny(testCase: TestCase, result: TestResult) {
       debug("afterAny - $testCase - $result")
-      if (testCase.descriptor.isRootTest()) stopScenario(testCase, result)
-      else stopStep(testCase, result)
+      if (testCase.descriptor.isRootTest()) state.stopScenario(testCase, result)
+      else state.stopStep(testCase, result)
    }
 
    override suspend fun ignoredSpec(kclass: KClass<*>, reason: String?) {
@@ -106,12 +109,12 @@ object KotestAllureListener : ProjectListener,
       debug("testIgnored - $testCase - $reason")
 
       if (reason != "Failfast enabled") {
-         if (testCase.descriptor.isRootTest()) startScenario(testCase)
-         else startStep(testCase)
+         if (testCase.descriptor.isRootTest()) state.startScenario(testCase)
+         else state.startStep(testCase)
       }
 
-      if (testCase.descriptor.isRootTest()) stopScenario(testCase, reason = reason)
-      else stopStep(testCase, reason = reason)
+      if (testCase.descriptor.isRootTest()) state.stopScenario(testCase, reason = reason)
+      else state.stopStep(testCase, reason = reason)
    }
 
    /**
@@ -138,8 +141,8 @@ object KotestAllureListener : ProjectListener,
          type = TestType.Test
       )
 
-      startScenario(informationTestCase)
-      stopScenario(informationTestCase, testResult)
+      state.startScenario(informationTestCase)
+      state.stopScenario(informationTestCase, testResult)
 
       allure.stopTestContainer(specContainerUuid)
       allure.writeTestContainer(specContainerUuid)
