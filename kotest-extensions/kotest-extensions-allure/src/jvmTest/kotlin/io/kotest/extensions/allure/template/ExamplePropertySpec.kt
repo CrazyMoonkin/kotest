@@ -15,16 +15,16 @@ import io.kotest.extensions.allure.stepNested
 @Feature("Data Driven")
 class ExamplePropertySpec : FreeSpec() {
 
-    init {
-        "Property".tms("T-100").task("J-100").allureId("000") - {
-            Arb.boolean().checkAll(2) {
-                val index = attempts()
-                "Nested Scenario $index" - {
-                    "Step $index" {
-                        stepNested()
-                    }
-                }
+   init {
+      "Property".tms("T-100").task("J-100").allureId("000") - {
+         Arb.boolean().checkAll(2) {
+            val index = attempts()
+            "Nested Scenario $index" - {
+               "Step $index" {
+                  stepNested()
+               }
             }
-        }
-    }
+         }
+      }
+   }
 }

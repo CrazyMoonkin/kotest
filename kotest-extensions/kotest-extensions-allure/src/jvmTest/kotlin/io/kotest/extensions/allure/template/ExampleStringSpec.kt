@@ -16,26 +16,26 @@ import io.kotest.extensions.allure.stepException1
 @Epic("Allure feature annotation on test class")
 @Feature("StringSpec")
 @Links(
-    value = [
-        Link("iopump.ru"),
-        Link("ya.ru")
-    ]
+   value = [
+      Link("iopump.ru"),
+      Link("ya.ru")
+   ]
 )
 class ExampleStringSpec : StringSpec() {
 
-    init {
-        setUpFixture("Set up testing fixture")
+   init {
+      setUpFixture("Set up testing fixture")
 
-        "Start kotest specification Scenario 2 #666" {
-            forAll(row("--1--"), row("--2--")) {
-                step1()
-                step2()
-                if (it == "--1--") {
-                    stepException1()
-                }
+      "Start kotest specification Scenario 2 #666" {
+         forAll(row("--1--"), row("--2--")) {
+            step1()
+            step2()
+            if (it == "--1--") {
+               stepException1()
             }
-        }
+         }
+      }
 
-        tearDownFixture("Tear Down testing fixture")
-    }
+      tearDownFixture("Tear Down testing fixture")
+   }
 }

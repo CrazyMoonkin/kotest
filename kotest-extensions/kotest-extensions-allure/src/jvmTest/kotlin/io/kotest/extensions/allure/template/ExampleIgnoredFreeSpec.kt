@@ -12,9 +12,9 @@ import io.qameta.allure.Story
 @Ignored
 class ExampleIgnoredFreeSpec : FreeSpec() {
 
-    init {
-        "Scenario: should be ignored" - {
-            "Step: should be ignored" { error("should be ignored but not") }
-        }
-    }
+   init {
+      "Scenario: should be ignored" - {
+         "Step: should be ignored" { error("should be ignored but not") }
+      }
+   }
 }

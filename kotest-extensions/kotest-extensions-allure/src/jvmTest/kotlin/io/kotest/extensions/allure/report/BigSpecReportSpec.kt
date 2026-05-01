@@ -13,101 +13,103 @@ import io.kotest.extensions.allure.util.AllureTestRunner
 
 class BigSpecReportSpec : FreeSpec({
 
-    "two root scenarios are captured" {
-        val stub = AllureTestRunner.runSpec(BigSpecSpec::class)
+   "two root scenarios are captured" {
+      val stub = AllureTestRunner.runSpec(BigSpecSpec::class)
 
-        stub.testResults shouldHaveSize 2
-        stub.testResults.map { it.name } shouldContain "Scenario: Getting employee by id"
-        stub.testResults.map { it.name } shouldContain "Scenario: Creating new employee"
-    }
+      stub.testResults shouldHaveSize 2
+      stub.testResults.map { it.name } shouldContain "Scenario: Getting employee by id"
+      stub.testResults.map { it.name } shouldContain "Scenario: Creating new employee"
+   }
 
-    "all scenarios are PASSED" {
-        val stub = AllureTestRunner.runSpec(BigSpecSpec::class)
+   "all scenarios are PASSED" {
+      val stub = AllureTestRunner.runSpec(BigSpecSpec::class)
 
-        stub.testResults.forEach { scenario ->
-            withClue("scenario '${scenario.name}'") {
-                scenario.status shouldBe Status.PASSED
+      stub.testResults.forEach { scenario ->
+         withClue("scenario '${scenario.name}'") {
+            scenario.status shouldBe Status.PASSED
+         }
+      }
+   }
+
+   "all steps are PASSED" {
+      val stub = AllureTestRunner.runSpec(BigSpecSpec::class)
+
+      stub.testResults.forEach { scenario ->
+         scenario.steps.forEach { step ->
+            withClue("step '${step.name}' inside '${scenario.name}'") {
+               step.status shouldBe Status.PASSED
             }
-        }
-    }
+         }
+      }
+   }
 
-    "all steps are PASSED" {
-        val stub = AllureTestRunner.runSpec(BigSpecSpec::class)
+   "Scenario: Getting employee by id" - {
 
-        stub.testResults.forEach { scenario ->
-            scenario.steps.forEach { step ->
-                withClue("step '${step.name}' inside '${scenario.name}'") {
-                    step.status shouldBe Status.PASSED
-                }
-            }
-        }
-    }
+      "has 3 steps" {
+         val stub = AllureTestRunner.runSpec(BigSpecSpec::class)
 
-    "Scenario: Getting employee by id" - {
+         val scenario = stub.testResults.find { it.name == "Scenario: Getting employee by id" }
+         scenario.shouldNotBeNull()
+         scenario.steps shouldHaveSize 3
+      }
 
-        "has 3 steps" {
-            val stub = AllureTestRunner.runSpec(BigSpecSpec::class)
+      "first step is Given" {
+         val stub = AllureTestRunner.runSpec(BigSpecSpec::class)
 
-            val scenario = stub.testResults.find { it.name == "Scenario: Getting employee by id" }
-            scenario.shouldNotBeNull()
-            scenario.steps shouldHaveSize 3
-        }
+         val steps = stub.testResults.find { it.name == "Scenario: Getting employee by id" }!!.steps
+         steps[0].name shouldBe "Given test environment is up and test data prepared"
+      }
 
-        "first step is Given" {
-            val stub = AllureTestRunner.runSpec(BigSpecSpec::class)
+      "second step is When" {
+         val stub = AllureTestRunner.runSpec(BigSpecSpec::class)
 
-            val steps = stub.testResults.find { it.name == "Scenario: Getting employee by id" }!!.steps
-            steps[0].name shouldBe "Given test environment is up and test data prepared"
-        }
+         val steps = stub.testResults.find { it.name == "Scenario: Getting employee by id" }!!.steps
+         steps[1].name shouldStartWith "When client sent request to get the employee by id="
+      }
 
-        "second step is When" {
-            val stub = AllureTestRunner.runSpec(BigSpecSpec::class)
+      "third step is Then" {
+         val stub = AllureTestRunner.runSpec(BigSpecSpec::class)
 
-            val steps = stub.testResults.find { it.name == "Scenario: Getting employee by id" }!!.steps
-            steps[1].name shouldStartWith "When client sent request to get the employee by id="
-        }
+         val steps = stub.testResults.find { it.name == "Scenario: Getting employee by id" }!!.steps
+         steps[2].name shouldStartWith "Then client received response with status 200 and id="
+      }
+   }
 
-        "third step is Then" {
-            val stub = AllureTestRunner.runSpec(BigSpecSpec::class)
+   "Scenario: Creating new employee" - {
 
-            val steps = stub.testResults.find { it.name == "Scenario: Getting employee by id" }!!.steps
-            steps[2].name shouldStartWith "Then client received response with status 200 and id="
-        }
-    }
+      "has 4 steps" {
+         val stub = AllureTestRunner.runSpec(BigSpecSpec::class)
 
-    "Scenario: Creating new employee" - {
+         val scenario = stub.testResults.find { it.name == "Scenario: Creating new employee" }
+         scenario.shouldNotBeNull()
+         scenario.steps shouldHaveSize 4
+      }
 
-        "has 4 steps" {
-            val stub = AllureTestRunner.runSpec(BigSpecSpec::class)
+      "step names are correct in order" {
+         val stub = AllureTestRunner.runSpec(BigSpecSpec::class)
 
-            val scenario = stub.testResults.find { it.name == "Scenario: Creating new employee" }
-            scenario.shouldNotBeNull()
-            scenario.steps shouldHaveSize 4
-        }
+         val steps = stub.testResults.find { it.name == "Scenario: Creating new employee" }!!.steps
+         steps.map { it.name } shouldBe listOf(
+            "Given test environment is up and test data prepared",
+            "When client sent request to create new employee",
+            "Then server received request with employee",
+            "And client received response with status 200 with generated id",
+         )
+      }
+   }
 
-        "step names are correct in order" {
-            val stub = AllureTestRunner.runSpec(BigSpecSpec::class)
+   "@Epic and @Feature labels are present on every test result" {
+      val stub = AllureTestRunner.runSpec(BigSpecSpec::class)
 
-            val steps = stub.testResults.find { it.name == "Scenario: Creating new employee" }!!.steps
-            steps.map { it.name } shouldBe listOf(
-                "Given test environment is up and test data prepared",
-                "When client sent request to create new employee",
-                "Then server received request with employee",
-                "And client received response with status 200 with generated id",
-            )
-        }
-    }
-
-    "@Epic and @Feature labels are present on every test result" {
-        val stub = AllureTestRunner.runSpec(BigSpecSpec::class)
-
-        stub.testResults.forEach { result ->
-            withClue("@Epic label in '${result.name}'") {
-                result.labels.any { it.name == "epic" && it.value == "Allure feature annotation on test class" } shouldBe true
-            }
-            withClue("@Feature label in '${result.name}'") {
-                result.labels.any { it.name == "feature" && it.value == "Concurrency" } shouldBe true
-            }
-        }
-    }
+      stub.testResults.forEach { result ->
+         withClue("@Epic label in '${result.name}'") {
+            result.labels.any {
+               it.name == "epic" && it.value == "Allure feature annotation on test class"
+            } shouldBe true
+         }
+         withClue("@Feature label in '${result.name}'") {
+            result.labels.any { it.name == "feature" && it.value == "Concurrency" } shouldBe true
+         }
+      }
+   }
 })

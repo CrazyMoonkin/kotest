@@ -11,51 +11,51 @@ import io.kotest.extensions.allure.util.AllureTestRunner
 
 class ExampleFreeSpec2ReportSpec : FreeSpec({
 
-    "two test results are captured — active and !-prefixed" {
-        val stub = AllureTestRunner.runSpec(ExampleFreeSpec2::class)
+   "two test results are captured — active and !-prefixed" {
+      val stub = AllureTestRunner.runSpec(ExampleFreeSpec2::class)
 
-        stub.testResults shouldHaveSize 2
-    }
+      stub.testResults shouldHaveSize 2
+   }
 
-    "active scenario Тест кейс 1 is PASSED" {
-        val stub = AllureTestRunner.runSpec(ExampleFreeSpec2::class)
+   "active scenario Тест кейс 1 is PASSED" {
+      val stub = AllureTestRunner.runSpec(ExampleFreeSpec2::class)
 
-        val result = stub.testResults.find { it.name == "Тест кейс 1" }
-        result.shouldNotBeNull()
-        result.status shouldBe Status.PASSED
-    }
+      val result = stub.testResults.find { it.name == "Тест кейс 1" }
+      result.shouldNotBeNull()
+      result.status shouldBe Status.PASSED
+   }
 
-    "bang-prefixed scenario is not PASSED or FAILED" {
-        val stub = AllureTestRunner.runSpec(ExampleFreeSpec2::class)
+   "bang-prefixed scenario is not PASSED or FAILED" {
+      val stub = AllureTestRunner.runSpec(ExampleFreeSpec2::class)
 
-        val skipped = stub.testResults.find { it.name == "Тест кейс 2 (пропущен)" }
-            ?: stub.testResults.find { it.name != "Тест кейс 1" }
-        skipped.shouldNotBeNull()
-        withClue("!-prefixed scenario must not pass or fail") {
-            skipped.status shouldBe Status.SKIPPED
-        }
-    }
+      val skipped = stub.testResults.find { it.name == "Тест кейс 2 (пропущен)" }
+         ?: stub.testResults.find { it.name != "Тест кейс 1" }
+      skipped.shouldNotBeNull()
+      withClue("!-prefixed scenario must not pass or fail") {
+         skipped.status shouldBe Status.SKIPPED
+      }
+   }
 
-    "@Epic annotation produces epic label" {
-        val stub = AllureTestRunner.runSpec(ExampleFreeSpec2::class)
+   "@Epic annotation produces epic label" {
+      val stub = AllureTestRunner.runSpec(ExampleFreeSpec2::class)
 
-        val result = stub.testResults.first { it.name == "Тест кейс 1" }
-        result.labels.any { it.name == "epic" && it.value == "Allure feature annotation on test class" } shouldBe true
-    }
+      val result = stub.testResults.first { it.name == "Тест кейс 1" }
+      result.labels.any { it.name == "epic" && it.value == "Allure feature annotation on test class" } shouldBe true
+   }
 
-    "@Feature annotation produces feature label" {
-        val stub = AllureTestRunner.runSpec(ExampleFreeSpec2::class)
+   "@Feature annotation produces feature label" {
+      val stub = AllureTestRunner.runSpec(ExampleFreeSpec2::class)
 
-        val result = stub.testResults.first { it.name == "Тест кейс 1" }
-        result.labels.any { it.name == "feature" && it.value == "FreeSpec" } shouldBe true
-    }
+      val result = stub.testResults.first { it.name == "Тест кейс 1" }
+      result.labels.any { it.name == "feature" && it.value == "FreeSpec" } shouldBe true
+   }
 
-    "active scenario has recorded steps" {
-        val stub = AllureTestRunner.runSpec(ExampleFreeSpec2::class)
+   "active scenario has recorded steps" {
+      val stub = AllureTestRunner.runSpec(ExampleFreeSpec2::class)
 
-        val result = stub.testResults.first { it.name == "Тест кейс 1" }
-        withClue("Тест кейс 1 must have at least one step") {
-            result.steps.isNotEmpty() shouldBe true
-        }
-    }
+      val result = stub.testResults.first { it.name == "Тест кейс 1" }
+      withClue("Тест кейс 1 must have at least one step") {
+         result.steps.isNotEmpty() shouldBe true
+      }
+   }
 })

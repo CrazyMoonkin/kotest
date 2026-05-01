@@ -15,15 +15,15 @@ import io.kotest.extensions.allure.stepNested
 @KAllureId(value = "1")
 class ExampleDataDrivenSpec : FreeSpec() {
 
-    init {
-        "Scenario [J-100] (T-3) #999" - {
-            withData(
-                nameFn = { "Test with $it" },
-                "one" to 1,
-                "two" to 2
-            ) {
-                stepNested()
-            }
-        }
-    }
+   init {
+      "Scenario [J-100] (T-3) #999" - {
+         withData(
+            nameFn = { "Test with $it" },
+            "one" to 1,
+            "two" to 2
+         ) {
+            stepNested()
+         }
+      }
+   }
 }

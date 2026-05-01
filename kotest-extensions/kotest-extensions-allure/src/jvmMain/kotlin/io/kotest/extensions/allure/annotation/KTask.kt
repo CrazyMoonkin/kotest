@@ -2,8 +2,8 @@ package io.kotest.extensions.allure.annotation
 
 import io.qameta.allure.LabelAnnotation
 import io.qameta.allure.LinkAnnotation
-import io.kotest.extensions.allure.api.KotestAllureConstant.TASK.LABEL_NAME
-import io.kotest.extensions.allure.api.KotestAllureConstant.TASK.LINK_TYPE
+import io.kotest.extensions.allure.api.KotestAllureConstant.Task.LABEL_NAME
+import io.kotest.extensions.allure.api.KotestAllureConstant.Task.LINK_TYPE
 import java.lang.annotation.Inherited
 
 @MustBeDocumented

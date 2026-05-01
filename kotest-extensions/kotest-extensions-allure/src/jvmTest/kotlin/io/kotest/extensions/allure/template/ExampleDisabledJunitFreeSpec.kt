@@ -12,9 +12,9 @@ import org.junit.jupiter.api.Disabled
 @Disabled("should be disabled by junit")
 class ExampleDisabledJunitFreeSpec : FreeSpec() {
 
-    init {
-        "Scenario: should be disabled by junit" - {
-            "Step: should be disabled by junit" { error("should be disabled by junit but not") }
-        }
-    }
+   init {
+      "Scenario: should be disabled by junit" - {
+         "Step: should be disabled by junit" { error("should be disabled by junit but not") }
+      }
+   }
 }

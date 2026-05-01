@@ -10,18 +10,18 @@ import io.qameta.allure.Story
 @Story("Instantiation FAIL")
 class ExampleFailInitFreeSpec : FreeSpec() {
 
-    init {
-        error("Instantiation FAIL")
+   init {
+      error("Instantiation FAIL")
 
-        "Scenario: should be skipped steps after fail" - {
+      "Scenario: should be skipped steps after fail" - {
 
-            "Step: passed 1" {}
+         "Step: passed 1" {}
 
-            "Step: failed 2" { error("Fail Fast ERROR") }
+         "Step: failed 2" { error("Fail Fast ERROR") }
 
-            "Step: skipped 3" {}
+         "Step: skipped 3" {}
 
-            "Step: skipped 4" {}
-        }
-    }
+         "Step: skipped 4" {}
+      }
+   }
 }

@@ -11,59 +11,59 @@ import io.kotest.extensions.allure.step2
 import io.kotest.extensions.allure.stepNested
 
 @Links(
-    value = [
-        Link("iopump.ru"),
-        Link("ya.ru")
-    ]
+   value = [
+      Link("iopump.ru"),
+      Link("ya.ru")
+   ]
 )
 class ExampleAllSkippedFreeSpec : FreeSpec() {
 
-    init {
+   init {
 
-        "!Scenario: 1" - {
-            forAll(
-                row("--1--"),
-                row("--2--")
-            ) {
-                "!Step 1 - $it" {
-                    step1()
-                }
-                "!Step 2 - $it" {
-                    stepNested()
-                }
-                "!Step 3 - $it" {
-                    step2()
-                    if (it == "--2--") throw AssertionError("Only on --2-- iteration")
-                }
+      "!Scenario: 1" - {
+         forAll(
+            row("--1--"),
+            row("--2--")
+         ) {
+            "!Step 1 - $it" {
+               step1()
             }
-        }
+            "!Step 2 - $it" {
+               stepNested()
+            }
+            "!Step 3 - $it" {
+               step2()
+               if (it == "--2--") throw AssertionError("Only on --2-- iteration")
+            }
+         }
+      }
 
-        "!Scenario: 2" - {
-            forAll(
-                row("--1--"),
-                row("--2--"),
-                row("--3--")
-            ) {
-                "Step 1 [$it]" {
-                    step1()
-                }
-                "Step 2 [$it]" {
-                    stepNested()
-                }
-                "Step 3 [$it]" {
-                    step2()
-                }
+      "!Scenario: 2" - {
+         forAll(
+            row("--1--"),
+            row("--2--"),
+            row("--3--")
+         ) {
+            "Step 1 [$it]" {
+               step1()
             }
+            "Step 2 [$it]" {
+               stepNested()
+            }
+            "Step 3 [$it]" {
+               step2()
+            }
+         }
 
-            forAll(
-                row("10"),
-                row("20"),
-            ) {
-                "Step 4 [$it]" {
-                    step1()
-                    attachText("forAll")
-                }
+         forAll(
+            row("10"),
+            row("20"),
+         ) {
+            "Step 4 [$it]" {
+               step1()
+               attachText("forAll")
             }
-        }
-    }
+         }
+      }
+   }
 }

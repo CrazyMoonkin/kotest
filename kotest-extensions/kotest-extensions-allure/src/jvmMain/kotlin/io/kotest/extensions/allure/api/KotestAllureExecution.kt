@@ -8,24 +8,24 @@ import io.qameta.allure.AllureLifecycle
 import io.qameta.allure.model.FixtureResult
 import io.qameta.allure.model.Status
 import io.kotest.extensions.allure.KotestAllureListener
-import io.kotest.extensions.allure.api.KotestAllureConstant.ALLURE_ID
-import io.kotest.extensions.allure.api.KotestAllureConstant.TASK
-import io.kotest.extensions.allure.api.KotestAllureConstant.TMS
-import io.kotest.extensions.allure.api.KotestAllureConstant.VAR
-import io.kotest.extensions.allure.api.KotestAllureExecution.PROJECT_UUID
+import io.kotest.extensions.allure.api.KotestAllureConstant.AllureId
+import io.kotest.extensions.allure.api.KotestAllureConstant.Task
+import io.kotest.extensions.allure.api.KotestAllureConstant.Tms
+import io.kotest.extensions.allure.api.KotestAllureConstant.Var
 import io.kotest.extensions.allure.api.KotestAllureExecution.containerUuid
+import io.kotest.extensions.allure.api.KotestAllureExecution.projectUuid
 import io.kotest.extensions.allure.api.KotestAllureExecution.setUpFixture
 import io.kotest.extensions.allure.helper.InternalUtil.logger
 import io.kotest.extensions.allure.helper.InternalUtil.prop
 import io.kotest.extensions.allure.helper.InternalUtil.safeFileName
 import java.io.File
-import java.util.*
+import java.util.UUID
 import kotlin.reflect.KClass
 
 /**
  * User API to get access to allure listener execution.
  * For example: create fixture [setUpFixture] or obtain actual [Spec] uuid in Allure Storage - [containerUuid]
- * or project execution root uuid - [PROJECT_UUID]
+ * or project execution root uuid - [projectUuid]
  */
 object KotestAllureExecution {
    private val log = logger<KotestAllureExecution>()
@@ -33,7 +33,7 @@ object KotestAllureExecution {
    /**
     * Get current [AllureLifecycle] or extended version for example [Slf4JAllureLifecycle]
     */
-   var ALLURE: AllureLifecycle = initAllureLifecycle()
+   var allure: AllureLifecycle = initAllureLifecycle()
       internal set
 
    /**
@@ -41,9 +41,9 @@ object KotestAllureExecution {
     *
     * See [setUpFixture]
     * See [tearDownFixture]
-    * See [EXECUTION_START_CALLBACK]
+    * See [executionStartCallback]
     */
-   val PROJECT_UUID = KotestAllureListener.hashCode().toString()
+   val projectUuid = KotestAllureListener.hashCode().toString()
 
    /**
     * Use to add project level Fixture.
@@ -52,7 +52,7 @@ object KotestAllureExecution {
     * See [setUpFixture]
     * See [tearDownFixture]
     */
-   var EXECUTION_START_CALLBACK: (projectUuid: String) -> Unit = { }
+   var executionStartCallback: (projectUuid: String) -> Unit = { }
 
    /**
     * Get container uuid of [Spec]
@@ -96,8 +96,8 @@ object KotestAllureExecution {
    /**
     * Create Set Up Fixture by container uuid.
     *
-    * See [PROJECT_UUID]
-    * See [EXECUTION_START_CALLBACK]
+    * See [projectUuid]
+    * See [executionStartCallback]
     * See [containerUuid]
     */
    fun String.setUpFixture(
@@ -110,8 +110,8 @@ object KotestAllureExecution {
          .also(fixtureResult)
 
       val uuid = UUID.randomUUID().toString()
-      ALLURE.startPrepareFixture(this, uuid, fixture)
-      if (atomic) ALLURE.stopFixture(uuid)
+      allure.startPrepareFixture(this, uuid, fixture)
+      if (atomic) allure.stopFixture(uuid)
       return uuid
    }
 
@@ -136,8 +136,8 @@ object KotestAllureExecution {
    /**
     * Create Tear Down Fixture by container uuid.
     *
-    * See [PROJECT_UUID]
-    * See [EXECUTION_START_CALLBACK]
+    * See [projectUuid]
+    * See [executionStartCallback]
     * See [containerUuid]
     */
    fun String.tearDownFixture(
@@ -150,38 +150,42 @@ object KotestAllureExecution {
          .also(fixtureResult)
 
       val uuid = UUID.randomUUID().toString()
-      ALLURE.startTearDownFixture(this, uuid, fixture)
-      if (atomic) ALLURE.stopFixture(uuid)
+      allure.startTearDownFixture(this, uuid, fixture)
+      if (atomic) allure.stopFixture(uuid)
       return uuid
    }
 
    /**
     * Add TMS key to test name.
-    * @see KotestAllureConstant.TMS
+    * @see KotestAllureConstant.Tms
     */
    fun String.tms(tmsKey: String) = "$this($tmsKey)"
-      .shouldBeDefaultPattern(TMS.PATTERN.pattern, TMS.PATTERN_DEFAULT, "tms", "allure.tms.pattern")
+      .shouldBeDefaultPattern(Tms.PATTERN.pattern, Tms.PATTERN_DEFAULT, "tms", "allure.tms.pattern")
 
    /**
     * Add ISSUE key to test name.
-    * @see KotestAllureConstant.TASK
+    * @see KotestAllureConstant.Task
     */
    fun String.task(issueKey: String) = "$this[$issueKey]"
-      .shouldBeDefaultPattern(TASK.PATTERN.pattern, TASK.PATTERN_DEFAULT, "issue", "allure.task.pattern")
+      .shouldBeDefaultPattern(Task.PATTERN.pattern, Task.PATTERN_DEFAULT, "issue", "allure.task.pattern")
 
    /**
     * Add AllureID (TestOps) key to test name.
-    * @see KotestAllureConstant.ALLURE_ID
+    * @see KotestAllureConstant.AllureId
     */
    fun String.allureId(allureId: String) = "$this#$allureId"
-      .shouldBeDefaultPattern(ALLURE_ID.PATTERN.pattern, ALLURE_ID.PATTERN_DEFAULT, "allureId", "allure.id.pattern")
+      .shouldBeDefaultPattern(AllureId.PATTERN.pattern, AllureId.PATTERN_DEFAULT, "allureId", "allure.id.pattern")
 
    /////////////////
    //// PRIVATE ////
    /////////////////
 
-   private fun String.shouldBeDefaultPattern(yourPattern: String, defaultPattern: String, funName: String, varName: String) =
-      if (yourPattern != defaultPattern) error(yourPattern, defaultPattern, funName, varName) else this
+   private fun String.shouldBeDefaultPattern(
+      yourPattern: String,
+      defaultPattern: String,
+      funName: String,
+      varName: String,
+   ) = if (yourPattern != defaultPattern) error(yourPattern, defaultPattern, funName, varName) else this
 
    private fun error(yourPattern: String, defaultPattern: String, funName: String, varName: String): Nothing =
       throw UnsupportedOperationException(
@@ -191,11 +195,11 @@ object KotestAllureExecution {
       )
 
    private fun initAllureLifecycle(): AllureLifecycle {
-      val resultDir = VAR.ALLURE_RESULTS_DIR.prop("build/allure-results")
-      val slf4jEnabled = VAR.ALLURE_SLF4J_LOG.prop(true)
-      val allureClassRef: String = VAR.ALLURE_LIFECYCLE_CLASS.prop("")
+      val resultDir = Var.ALLURE_RESULTS_DIR.prop("build/allure-results")
+      val slf4jEnabled = Var.ALLURE_SLF4J_LOG.prop(true)
+      val allureClassRef: String = Var.ALLURE_LIFECYCLE_CLASS.prop("")
 
-      System.setProperty(VAR.ALLURE_RESULTS_DIR, resultDir)
+      System.setProperty(Var.ALLURE_RESULTS_DIR, resultDir)
       clearPreviousResults(File(resultDir))
 
       return (if (allureClassRef.isNotBlank())
@@ -206,7 +210,7 @@ object KotestAllureExecution {
    }
 
    private fun clearPreviousResults(dir: File) {
-      if (VAR.CLEAR_ALLURE_RESULTS_DIR.prop(true)) {
+      if (Var.CLEAR_ALLURE_RESULTS_DIR.prop(true)) {
          if (dir.exists() && dir.isDirectory) {
             runCatching { dir.deleteRecursively() }.getOrElse { log.error("Cannot delete '$dir'", it) }
          }

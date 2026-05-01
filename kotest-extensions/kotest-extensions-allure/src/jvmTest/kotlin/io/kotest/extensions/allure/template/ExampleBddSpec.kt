@@ -22,41 +22,41 @@ import io.kotest.extensions.allure.stepException2
 @Epic("Allure feature annotation on test class")
 @Feature("Behavior")
 @Links(
-    value = [Link(url = "http://iopump.ru"), Link(url = "https://ya.ru")]
+   value = [Link(url = "http://iopump.ru"), Link(url = "https://ya.ru")]
 )
 @KDescription(
-    """
-    This is multiline description.
-    It must be a new line
+   """
+   This is multiline description.
+   It must be a new line
 """
 )
 @Issues(
-    value = [Issue("TTT-666"), Issue("TTT-777")]
+   value = [Issue("TTT-666"), Issue("TTT-777")]
 )
 @KTasks(
-    value = [KTask("TTT-111"), KTask("TTT-000")]
+   value = [KTask("TTT-111"), KTask("TTT-000")]
 )
 @KAllureId("888")
 @KTag("autotest")
 @KTags(
-    value = [KTag("auto"), KTag("test")]
+   value = [KTag("auto"), KTag("test")]
 )
 class ExampleBddSpec : BehaviorSpec() {
 
-    init {
-        Given("[PRJ-100] Start kotest specification Scenario #777") {
-            forAll(row("FirstIterArg"), row("SecondIterArg")) { arg ->
+   init {
+      Given("[PRJ-100] Start kotest specification Scenario #777") {
+         forAll(row("FirstIterArg"), row("SecondIterArg")) { arg ->
 
-                When("Start step 1 [PRJ-110] - $arg") {
+            When("Start step 1 [PRJ-110] - $arg") {
                    step1()
-                }
-                Then("[PRJ-160] Nested step has been printed - $arg") {
-                   stepException1()
-                }
-                And("Step 2 has been printed too [PRJ-1300] - $arg") {
-                   stepException2()
-                }
             }
-        }
-    }
+            Then("[PRJ-160] Nested step has been printed - $arg") {
+                   stepException1()
+            }
+            And("Step 2 has been printed too [PRJ-1300] - $arg") {
+                   stepException2()
+            }
+         }
+      }
+   }
 }

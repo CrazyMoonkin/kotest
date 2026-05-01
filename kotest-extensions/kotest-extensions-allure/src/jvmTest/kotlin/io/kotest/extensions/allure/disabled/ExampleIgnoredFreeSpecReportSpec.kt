@@ -8,17 +8,17 @@ import io.kotest.extensions.allure.util.AllureTestRunner
 
 class ExampleIgnoredFreeSpecReportSpec : FreeSpec({
 
-    "@Ignored spec produces no PASSED or FAILED results" {
-        val stub = AllureTestRunner.runSpec(ExampleIgnoredFreeSpec::class)
+   "@Ignored spec produces no PASSED or FAILED results" {
+      val stub = AllureTestRunner.runSpec(ExampleIgnoredFreeSpec::class)
 
-        stub.testResults.none {
-            it.status == Status.PASSED || it.status == Status.FAILED || it.status == Status.BROKEN
-        } shouldBe true
-    }
+      stub.testResults.none {
+         it.status == Status.PASSED || it.status == Status.FAILED || it.status == Status.BROKEN
+      } shouldBe true
+   }
 
-    "@Ignored spec result is SKIPPED" {
-        val stub = AllureTestRunner.runSpec(ExampleIgnoredFreeSpec::class)
+   "@Ignored spec result is SKIPPED" {
+      val stub = AllureTestRunner.runSpec(ExampleIgnoredFreeSpec::class)
 
-        stub.testResults.all { it.status == Status.SKIPPED } shouldBe true
-    }
+      stub.testResults.all { it.status == Status.SKIPPED } shouldBe true
+   }
 })

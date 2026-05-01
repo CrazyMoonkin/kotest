@@ -12,8 +12,8 @@ import io.qameta.allure.model.Status
 import io.qameta.allure.model.StatusDetails
 import io.qameta.allure.model.StepResult
 import io.kotest.extensions.allure.KotestAllureListener.log
-import io.kotest.extensions.allure.api.KotestAllureConstant.VAR.DATA_DRIVEN_SUPPORT
-import io.kotest.extensions.allure.api.KotestAllureExecution.ALLURE
+import io.kotest.extensions.allure.api.KotestAllureConstant.Var.DATA_DRIVEN_SUPPORT
+import io.kotest.extensions.allure.api.KotestAllureExecution.allure
 import io.kotest.extensions.allure.api.KotestAllureExecution.containerUuid
 import io.kotest.extensions.allure.helper.InternalExecutionModel.Iteration.Factory.scenario
 import io.kotest.extensions.allure.helper.InternalExecutionModel.startStep
@@ -60,16 +60,16 @@ object InternalExecutionModel {
             }
             val metadata = AllureMetadata(testCase.spec::class, testCase.descriptor)
             val result = AllureTestResult().apply { updateTestResult(uuid, testCase, metadata, index) }
-            ALLURE.scheduleTestCase(testCase.spec.containerUuid, result)
-            ALLURE.startTestCase(uuid)
+            allure.scheduleTestCase(testCase.spec.containerUuid, result)
+            allure.startTestCase(uuid)
          }
 
    internal fun stopScenario(testCase: KotestTestCase, testResult: KotestTestResult, prune: Boolean = true) {
       testUuidMap[testCase.descriptor].toOptional().ifPresentOrElse(
          { uuid ->
-            ALLURE.updateTestCase(uuid) { it.updateStatus(testResult.toAllure()) }
-            ALLURE.stopTestCase(uuid)
-            ALLURE.writeTestCase(uuid)
+            allure.updateTestCase(uuid) { it.updateStatus(testResult.toAllure()) }
+            allure.stopTestCase(uuid)
+            allure.writeTestCase(uuid)
 
             if (dataDrivenSupport && prune) iterationMap.remove(testCase.descriptor)
             testUuidMap.remove(testCase.descriptor)
@@ -81,9 +81,11 @@ object InternalExecutionModel {
    internal fun stopScenario(testCase: KotestTestCase, reason: String?, prune: Boolean = true) {
       testUuidMap[testCase.descriptor].toOptional().ifPresentOrElse(
          { uuid ->
-            ALLURE.updateTestCase(uuid) { it.updateStatus(Status.SKIPPED to StatusDetails().apply { this.message = reason }) }
-            ALLURE.stopTestCase(uuid)
-            ALLURE.writeTestCase(uuid)
+            allure.updateTestCase(uuid) {
+               it.updateStatus(Status.SKIPPED to StatusDetails().apply { this.message = reason })
+            }
+            allure.stopTestCase(uuid)
+            allure.writeTestCase(uuid)
 
             if (dataDrivenSupport && prune) iterationMap.remove(testCase.descriptor)
             testUuidMap.remove(testCase.descriptor)
@@ -98,7 +100,7 @@ object InternalExecutionModel {
    private fun processSkip(testCase: KotestTestCase) {
       testCase.scenario.toOptional().ifPresent { scenario ->
          testUuidMap[scenario].toOptional().ifPresent { scenarioUuid ->
-            ALLURE.updateTestCase(scenarioUuid) {
+            allure.updateTestCase(scenarioUuid) {
                processSkipResult(it)
             }
          }
@@ -132,7 +134,7 @@ object InternalExecutionModel {
                   { parentUuid ->
                      val metadata = AllureMetadata(description = testCase.descriptor)
                      val result = StepResult().also { it.updateStepResult(testCase, metadata) }
-                     ALLURE.startStep(parentUuid, uuid, result)
+                     allure.startStep(parentUuid, uuid, result)
                      processSkip(testCase)
                   },
                   { startScenario(testCase) }
@@ -145,15 +147,15 @@ object InternalExecutionModel {
          { uuid ->
             testCase.parentUuid.toOptional().ifPresentOrElse(
                {
-                  ALLURE.updateStep(uuid) { it.updateStatus(testResult.toAllure()) }
-                  ALLURE.stopStep(uuid)
+                  allure.updateStep(uuid) { it.updateStatus(testResult.toAllure()) }
+                  allure.stopStep(uuid)
                   if (testResult.needPassOnTop) {
                      testCase.descriptor.parents().forEach { description ->
                         val updateFunction = { parentUuid: String ->
                            if (description.isRootTest())
-                              ALLURE.updateTestCase(parentUuid) { it.updateStatus(testResult.toAllure()) }
+                              allure.updateTestCase(parentUuid) { it.updateStatus(testResult.toAllure()) }
                            else
-                              ALLURE.updateStep(parentUuid) { it.updateStatus(testResult.toAllure()) }
+                              allure.updateStep(parentUuid) { it.updateStatus(testResult.toAllure()) }
                         }
                         testUuidMap[description].toOptional().ifPresent(updateFunction)
                      }
@@ -172,11 +174,11 @@ object InternalExecutionModel {
          { uuid ->
             testCase.parentUuid.toOptional().ifPresentOrElse(
                {
-                  ALLURE.updateStep(uuid) {
+                  allure.updateStep(uuid) {
                      it.updateStatus(
                         Status.SKIPPED to StatusDetails().apply { this.message = reason })
                   }
-                  ALLURE.stopStep(uuid)
+                  allure.stopStep(uuid)
                   testUuidMap.remove(testCase.descriptor)
                },
                { stopScenario(testCase = testCase, reason = reason) }

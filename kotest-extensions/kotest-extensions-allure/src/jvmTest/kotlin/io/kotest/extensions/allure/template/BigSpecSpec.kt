@@ -13,30 +13,30 @@ import io.qameta.allure.Feature
 @Epic("Allure feature annotation on test class")
 @Feature("Concurrency")
 class BigSpecSpec : FreeSpec() {
-    init {
-        testExecutionMode = TestExecutionMode.Concurrent
+   init {
+      testExecutionMode = TestExecutionMode.Concurrent
 
-        "Scenario: Getting employee by id" - {
+      "Scenario: Getting employee by id" - {
 
-            var expectedId = 0
-            "Given test environment is up and test data prepared" {
-                expectedId = Arb.positiveInt().next()
-            }
+         var expectedId = 0
+         "Given test environment is up and test data prepared" {
+            expectedId = Arb.positiveInt().next()
+         }
 
-            "When client sent request to get the employee by id=$expectedId" { }
+         "When client sent request to get the employee by id=$expectedId" { }
 
-            "Then client received response with status 200 and id=$expectedId" { }
-        }
+         "Then client received response with status 200 and id=$expectedId" { }
+      }
 
-        "Scenario: Creating new employee" - {
+      "Scenario: Creating new employee" - {
 
-            "Given test environment is up and test data prepared" { }
+         "Given test environment is up and test data prepared" { }
 
-            "When client sent request to create new employee" { }
+         "When client sent request to create new employee" { }
 
-            "Then server received request with employee" { }
+         "Then server received request with employee" { }
 
-            "And client received response with status 200 with generated id" { }
-        }
-    }
+         "And client received response with status 200 with generated id" { }
+      }
+   }
 }

@@ -1,55 +1,130 @@
-public final class io/kotest/extensions/allure/AllureTestReporter : io/kotest/core/listeners/AfterTestListener, io/kotest/core/listeners/BeforeTestListener, io/kotest/core/listeners/InstantiationErrorListener {
-	public fun <init> ()V
-	public fun <init> (ZLio/kotest/extensions/allure/AllureWriter;)V
-	public synthetic fun <init> (ZLio/kotest/extensions/allure/AllureWriter;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+public final class io/kotest/extensions/allure/KotestAllureListener : io/kotest/core/listeners/IgnoredSpecListener, io/kotest/core/listeners/IgnoredTestListener, io/kotest/core/listeners/InstantiationErrorListener, io/kotest/core/listeners/ProjectListener, io/kotest/core/listeners/TestListener {
+	public static final field INSTANCE Lio/kotest/extensions/allure/KotestAllureListener;
 	public fun afterAny (Lio/kotest/core/test/TestCase;Lio/kotest/engine/test/TestResult;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun afterContainer (Lio/kotest/core/test/TestCase;Lio/kotest/engine/test/TestResult;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun afterEach (Lio/kotest/core/test/TestCase;Lio/kotest/engine/test/TestResult;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun afterInvocation (Lio/kotest/core/test/TestCase;ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun afterProject (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun afterSpec (Lio/kotest/core/spec/Spec;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun afterTest (Lio/kotest/core/test/TestCase;Lio/kotest/engine/test/TestResult;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun beforeAny (Lio/kotest/core/test/TestCase;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun beforeContainer (Lio/kotest/core/test/TestCase;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun beforeEach (Lio/kotest/core/test/TestCase;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun beforeInvocation (Lio/kotest/core/test/TestCase;ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun beforeProject (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun beforeSpec (Lio/kotest/core/spec/Spec;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun beforeTest (Lio/kotest/core/test/TestCase;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun finalizeSpec (Lkotlin/reflect/KClass;Ljava/util/Map;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun ignoredSpec (Lkotlin/reflect/KClass;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun ignoredTest (Lio/kotest/core/test/TestCase;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun instantiationError (Lkotlin/reflect/KClass;Ljava/lang/Throwable;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun prepareSpec (Lkotlin/reflect/KClass;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public final class io/kotest/extensions/allure/AllureWriter {
-	public static final field Companion Lio/kotest/extensions/allure/AllureWriter$Companion;
-	public static final field FRAMEWORK_LABEL Ljava/lang/String;
-	public static final field LANGUAGE_LABEL Ljava/lang/String;
-	public fun <init> (Ljava/lang/String;)V
-	public final fun allureResultSpecInitFailure (Lkotlin/reflect/KClass;Ljava/lang/Throwable;)V
-	public final fun finishTestCase (Lio/kotest/core/test/TestCase;Lio/kotest/engine/test/TestResult;)V
-	public final fun id (Lio/kotest/core/test/TestCase;)Ljava/lang/String;
-	public final fun startTestCase (Lio/kotest/core/test/TestCase;)V
+public abstract interface annotation class io/kotest/extensions/allure/annotation/KAllureId : java/lang/annotation/Annotation {
+	public abstract fun value ()Ljava/lang/String;
 }
 
-public final class io/kotest/extensions/allure/AllureWriter$Companion {
-	public final fun invoke ()Lio/kotest/extensions/allure/AllureWriter;
+public abstract interface annotation class io/kotest/extensions/allure/annotation/KDescription : java/lang/annotation/Annotation {
+	public abstract fun value ()Ljava/lang/String;
 }
 
-public final class io/kotest/extensions/allure/EpicKt {
-	public static final fun description (Lio/kotest/core/test/TestCase;)Ljava/lang/String;
-	public static final fun description (Lkotlin/reflect/KClass;)Ljava/lang/String;
-	public static final fun epic (Lio/kotest/core/test/TestCase;)Lio/qameta/allure/model/Label;
-	public static final fun epic (Lkotlin/reflect/KClass;)Lio/qameta/allure/model/Label;
-	public static final fun feature (Lio/kotest/core/test/TestCase;)Lio/qameta/allure/model/Label;
-	public static final fun feature (Lkotlin/reflect/KClass;)Lio/qameta/allure/model/Label;
-	public static final fun owner (Lio/kotest/core/test/TestCase;)Lio/qameta/allure/model/Label;
-	public static final fun owner (Lkotlin/reflect/KClass;)Lio/qameta/allure/model/Label;
-	public static final fun severity (Lkotlin/reflect/KClass;)Lio/qameta/allure/model/Label;
-	public static final fun story (Lio/kotest/core/test/TestCase;)Lio/qameta/allure/model/Label;
-	public static final fun story (Lkotlin/reflect/KClass;)Lio/qameta/allure/model/Label;
+public abstract interface annotation class io/kotest/extensions/allure/annotation/KTag : java/lang/annotation/Annotation {
+	public abstract fun value ()Ljava/lang/String;
 }
 
-public final class io/kotest/extensions/allure/IssueKt {
-	public static final fun issue (Lio/kotest/core/test/TestCase;)Lio/qameta/allure/model/Link;
-	public static final fun issue (Lkotlin/reflect/KClass;)Lio/qameta/allure/model/Link;
-	public static final fun link (Lio/kotest/core/test/TestCase;)Lio/qameta/allure/model/Link;
-	public static final fun link (Lkotlin/reflect/KClass;)Lio/qameta/allure/model/Link;
-	public static final fun links (Lio/kotest/core/test/TestCase;)Ljava/util/List;
-	public static final fun links (Lkotlin/reflect/KClass;)Ljava/util/List;
+public abstract interface annotation class io/kotest/extensions/allure/annotation/KTag$Container : java/lang/annotation/Annotation {
+	public abstract fun value ()[Lio/kotest/extensions/allure/annotation/KTag;
 }
 
-public final class io/kotest/extensions/allure/MaxSeverityKt {
-	public static final fun maxSeverity (Lio/kotest/core/test/TestCase;)Lio/qameta/allure/SeverityLevel;
-	public static final fun toAllureSeverity (Lio/kotest/core/test/TestCaseSeverityLevel;)Lio/qameta/allure/SeverityLevel;
-	public static final fun toTestCaseSeverity (Lio/qameta/allure/SeverityLevel;)Lio/kotest/core/test/TestCaseSeverityLevel;
+public abstract interface annotation class io/kotest/extensions/allure/annotation/KTags : java/lang/annotation/Annotation {
+	public abstract fun value ()[Lio/kotest/extensions/allure/annotation/KTag;
+}
+
+public abstract interface annotation class io/kotest/extensions/allure/annotation/KTask : java/lang/annotation/Annotation {
+	public abstract fun value ()Ljava/lang/String;
+}
+
+public abstract interface annotation class io/kotest/extensions/allure/annotation/KTask$Container : java/lang/annotation/Annotation {
+	public abstract fun value ()[Lio/kotest/extensions/allure/annotation/KTask;
+}
+
+public abstract interface annotation class io/kotest/extensions/allure/annotation/KTasks : java/lang/annotation/Annotation {
+	public abstract fun value ()[Lio/kotest/extensions/allure/annotation/KTask;
+}
+
+public final class io/kotest/extensions/allure/api/KotestAllureConstant {
+	public static final field INSTANCE Lio/kotest/extensions/allure/api/KotestAllureConstant;
+}
+
+public final class io/kotest/extensions/allure/api/KotestAllureConstant$AllureId {
+	public static final field INSTANCE Lio/kotest/extensions/allure/api/KotestAllureConstant$AllureId;
+	public final fun getPATTERN ()Lkotlin/text/Regex;
+}
+
+public final class io/kotest/extensions/allure/api/KotestAllureConstant$Task {
+	public static final field INSTANCE Lio/kotest/extensions/allure/api/KotestAllureConstant$Task;
+	public static final field LABEL_NAME Ljava/lang/String;
+	public static final field LINK_TYPE Ljava/lang/String;
+	public final fun getPATTERN ()Lkotlin/text/Regex;
+}
+
+public final class io/kotest/extensions/allure/api/KotestAllureConstant$Tms {
+	public static final field INSTANCE Lio/kotest/extensions/allure/api/KotestAllureConstant$Tms;
+	public final fun getPATTERN ()Lkotlin/text/Regex;
+}
+
+public final class io/kotest/extensions/allure/api/KotestAllureConstant$Var {
+	public static final field ALLURE_ID_PATTERN Ljava/lang/String;
+	public static final field ALLURE_LIFECYCLE_CLASS Ljava/lang/String;
+	public static final field ALLURE_RESULTS_DIR Ljava/lang/String;
+	public static final field ALLURE_SLF4J_LOG Ljava/lang/String;
+	public static final field ALLURE_TASK_PATTERN Ljava/lang/String;
+	public static final field ALLURE_TMS_PATTERN Ljava/lang/String;
+	public static final field CLEAR_ALLURE_RESULTS_DIR Ljava/lang/String;
+	public static final field DATA_DRIVEN_SUPPORT Ljava/lang/String;
+	public static final field INSTANCE Lio/kotest/extensions/allure/api/KotestAllureConstant$Var;
+	public static final field SKIP_ON_FAIL Ljava/lang/String;
+	public static final field TEST_NAME_AUTO_CLEAN_UP Ljava/lang/String;
+}
+
+public final class io/kotest/extensions/allure/api/KotestAllureExecution {
+	public static final field INSTANCE Lio/kotest/extensions/allure/api/KotestAllureExecution;
+	public final fun allureId (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+	public final fun bestName (Lio/kotest/core/descriptors/Descriptor;)Ljava/lang/String;
+	public final fun getAllure ()Lio/qameta/allure/AllureLifecycle;
+	public final fun getContainerUuid (Lio/kotest/core/spec/Spec;)Ljava/lang/String;
+	public final fun getContainerUuid (Lkotlin/reflect/KClass;)Ljava/lang/String;
+	public final fun getExecutionStartCallback ()Lkotlin/jvm/functions/Function1;
+	public final fun getProjectUuid ()Ljava/lang/String;
+	public final fun setExecutionStartCallback (Lkotlin/jvm/functions/Function1;)V
+	public final fun setUpFixture (Lio/kotest/core/spec/Spec;Ljava/lang/String;ZLkotlin/jvm/functions/Function1;)Ljava/lang/String;
+	public final fun setUpFixture (Ljava/lang/String;Ljava/lang/String;ZLkotlin/jvm/functions/Function1;)Ljava/lang/String;
+	public final fun setUpFixture (Lkotlin/reflect/KClass;Ljava/lang/String;ZLkotlin/jvm/functions/Function1;)Ljava/lang/String;
+	public static synthetic fun setUpFixture$default (Lio/kotest/extensions/allure/api/KotestAllureExecution;Lio/kotest/core/spec/Spec;Ljava/lang/String;ZLkotlin/jvm/functions/Function1;ILjava/lang/Object;)Ljava/lang/String;
+	public static synthetic fun setUpFixture$default (Lio/kotest/extensions/allure/api/KotestAllureExecution;Ljava/lang/String;Ljava/lang/String;ZLkotlin/jvm/functions/Function1;ILjava/lang/Object;)Ljava/lang/String;
+	public static synthetic fun setUpFixture$default (Lio/kotest/extensions/allure/api/KotestAllureExecution;Lkotlin/reflect/KClass;Ljava/lang/String;ZLkotlin/jvm/functions/Function1;ILjava/lang/Object;)Ljava/lang/String;
+	public final fun task (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+	public final fun tearDownFixture (Lio/kotest/core/spec/Spec;Ljava/lang/String;ZLkotlin/jvm/functions/Function1;)Ljava/lang/String;
+	public final fun tearDownFixture (Ljava/lang/String;Ljava/lang/String;ZLkotlin/jvm/functions/Function1;)Ljava/lang/String;
+	public final fun tearDownFixture (Lkotlin/reflect/KClass;Ljava/lang/String;ZLkotlin/jvm/functions/Function1;)Ljava/lang/String;
+	public static synthetic fun tearDownFixture$default (Lio/kotest/extensions/allure/api/KotestAllureExecution;Lio/kotest/core/spec/Spec;Ljava/lang/String;ZLkotlin/jvm/functions/Function1;ILjava/lang/Object;)Ljava/lang/String;
+	public static synthetic fun tearDownFixture$default (Lio/kotest/extensions/allure/api/KotestAllureExecution;Ljava/lang/String;Ljava/lang/String;ZLkotlin/jvm/functions/Function1;ILjava/lang/Object;)Ljava/lang/String;
+	public static synthetic fun tearDownFixture$default (Lio/kotest/extensions/allure/api/KotestAllureExecution;Lkotlin/reflect/KClass;Ljava/lang/String;ZLkotlin/jvm/functions/Function1;ILjava/lang/Object;)Ljava/lang/String;
+	public final fun tms (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+}
+
+public class io/kotest/extensions/allure/api/Slf4JAllureLifecycle : io/qameta/allure/AllureLifecycle {
+	public fun <init> (Lorg/slf4j/Logger;)V
+	public fun addAttachment (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/io/InputStream;)V
+	public fun startStep (Ljava/lang/String;Ljava/lang/String;Lio/qameta/allure/model/StepResult;)V
+}
+
+public final class io/kotest/extensions/allure/helper/InternalExecutionModel {
+	public static final field INSTANCE Lio/kotest/extensions/allure/helper/InternalExecutionModel;
+}
+
+public final class io/kotest/extensions/allure/helper/meta/AllureMetadataSupport {
+	public static final field INSTANCE Lio/kotest/extensions/allure/helper/meta/AllureMetadataSupport;
 }
 

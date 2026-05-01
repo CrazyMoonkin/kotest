@@ -15,59 +15,59 @@ import io.kotest.extensions.allure.stepNested
 @Epic("Allure feature annotation on test class")
 @Feature("FreeSpec")
 @Links(
-    value = [
-        Link("iopump.ru"),
-        Link("ya.ru")
-    ]
+   value = [
+      Link("iopump.ru"),
+      Link("ya.ru")
+   ]
 )
 class ExampleSomeSkippedFreeSpec : FreeSpec() {
 
-    init {
+   init {
 
-        "Start kotest specification Scenario 1 (skip test)" - {
-            forAll(
-                row("--1--"),
-                row("--2--")
-            ) {
-                "Start step 1 - $it" {
-                    step1()
-                }
-                "!Skipped step  - $it" {
-                    stepNested()
-                }
-                "Step 2 has been printed too  - $it" {
-                    step2()
-                    if (it == "--2--") throw AssertionError("Only on --2-- iteration")
-                }
+      "Start kotest specification Scenario 1 (skip test)" - {
+         forAll(
+            row("--1--"),
+            row("--2--")
+         ) {
+            "Start step 1 - $it" {
+               step1()
             }
-        }
+            "!Skipped step  - $it" {
+               stepNested()
+            }
+            "Step 2 has been printed too  - $it" {
+               step2()
+               if (it == "--2--") throw AssertionError("Only on --2-- iteration")
+            }
+         }
+      }
 
-        "!Skipped Scenario 2" - {
-            forAll(
-                row("--1--"),
-                row("--2--"),
-                row("--3--")
-            ) {
-                "Start step 1 [$it]" {
-                    step1()
-                }
-                "Nested step has been printed [$it]" {
-                    stepNested()
-                }
-                "Step 2 has been printed too [$it]" {
-                    step2()
-                }
+      "!Skipped Scenario 2" - {
+         forAll(
+            row("--1--"),
+            row("--2--"),
+            row("--3--")
+         ) {
+            "Start step 1 [$it]" {
+               step1()
             }
+            "Nested step has been printed [$it]" {
+               stepNested()
+            }
+            "Step 2 has been printed too [$it]" {
+               step2()
+            }
+         }
 
-            forAll(
-                row("10"),
-                row("20"),
-            ) {
-                "!Just single step [$it]" {
-                    step1()
-                    attachText("forAll")
-                }
+         forAll(
+            row("10"),
+            row("20"),
+         ) {
+            "!Just single step [$it]" {
+               step1()
+               attachText("forAll")
             }
-        }
-    }
+         }
+      }
+   }
 }
