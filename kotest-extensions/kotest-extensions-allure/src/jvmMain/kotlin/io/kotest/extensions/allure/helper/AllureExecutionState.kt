@@ -8,8 +8,6 @@ import io.kotest.core.source.SourceRef.ClassSource
 import io.kotest.core.source.SourceRef.None
 import io.kotest.engine.test.TestResult
 import io.kotest.engine.test.TestResult.Success
-import io.qameta.allure.model.Status
-import io.qameta.allure.model.StatusDetails
 import io.qameta.allure.model.StepResult
 import io.kotest.extensions.allure.api.KotestAllureConstant.Var.DATA_DRIVEN_SUPPORT
 import io.kotest.extensions.allure.api.KotestAllureExecution.allure
@@ -71,22 +69,6 @@ internal class AllureExecutionState {
       testUuidMap.remove(testCase.descriptor)
    }
 
-   internal fun stopScenario(testCase: KotestTestCase, reason: String?, prune: Boolean = true) {
-      val uuid = testUuidMap[testCase.descriptor]
-      if (uuid == null) {
-         log.error("Cannot stop Scenario '$testCase' because it hasn't been started")
-         return
-      }
-      allure.updateTestCase(uuid) {
-         it.updateStatus(Status.SKIPPED to StatusDetails().apply { this.message = reason })
-      }
-      allure.stopTestCase(uuid)
-      allure.writeTestCase(uuid)
-
-      if (dataDrivenSupport && prune) iterationMap.remove(testCase.descriptor)
-      testUuidMap.remove(testCase.descriptor)
-   }
-
    internal fun startStep(testCase: KotestTestCase) {
       testUuidMap.computeIfAbsent(testCase.descriptor) { uuid() }
          .also { uuid ->
@@ -124,23 +106,6 @@ internal class AllureExecutionState {
                allure.updateStep(parentUuid) { it.updateStatus(testResult.toAllure()) }
          }
       }
-      testUuidMap.remove(testCase.descriptor)
-   }
-
-   internal fun stopStep(testCase: KotestTestCase, reason: String?) {
-      val uuid = testUuidMap[testCase.descriptor]
-      if (uuid == null) {
-         log.error("Cannot stop Step '$testCase' because it hasn't been started")
-         return
-      }
-      if (testCase.parentUuid == null) {
-         stopScenario(testCase = testCase, reason = reason)
-         return
-      }
-      allure.updateStep(uuid) {
-         it.updateStatus(Status.SKIPPED to StatusDetails().apply { this.message = reason })
-      }
-      allure.stopStep(uuid)
       testUuidMap.remove(testCase.descriptor)
    }
 

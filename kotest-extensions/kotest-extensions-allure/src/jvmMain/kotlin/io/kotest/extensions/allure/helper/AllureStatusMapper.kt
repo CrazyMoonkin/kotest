@@ -27,12 +27,14 @@ internal object AllureStatusMapper {
          is TestResult.Success -> PASSED
       }
 
-      val details = this.errorOrNull?.let { throwable ->
-         StatusDetails().apply {
-            this.message = throwable.toString()
-            this.trace = throwable.readStackTrace()
+      val details = when {
+         this is TestResult.Ignored -> StatusDetails().apply { message = reason }
+         errorOrNull != null -> StatusDetails().apply {
+            message = errorOrNull!!.toString()
+            trace = errorOrNull!!.readStackTrace()
          }
-      } ?: StatusDetails()
+         else -> StatusDetails()
+      }
 
       return status to details
    }

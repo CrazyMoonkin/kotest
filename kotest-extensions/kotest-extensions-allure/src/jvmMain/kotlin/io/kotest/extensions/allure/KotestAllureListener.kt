@@ -113,8 +113,9 @@ object KotestAllureListener : ProjectListener,
          else state.startStep(testCase)
       }
 
-      if (testCase.descriptor.isRootTest()) state.stopScenario(testCase, reason = reason)
-      else state.stopStep(testCase, reason = reason)
+      val ignored = TestResult.Ignored(reason)
+      if (testCase.descriptor.isRootTest()) state.stopScenario(testCase, ignored)
+      else state.stopStep(testCase, ignored)
    }
 
    /**
