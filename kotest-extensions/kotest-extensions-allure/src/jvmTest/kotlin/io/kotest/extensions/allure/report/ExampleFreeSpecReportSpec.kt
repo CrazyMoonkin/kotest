@@ -3,6 +3,8 @@ package io.kotest.extensions.allure.report
 import io.kotest.assertions.withClue
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.collections.shouldNotBeEmpty
+import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.qameta.allure.model.Status
 import io.kotest.extensions.allure.template.ExampleFreeSpec
@@ -42,8 +44,21 @@ class ExampleFreeSpecReportSpec : FreeSpec({
       val stub = AllureTestRunner.runSpec(ExampleFreeSpec::class)
 
       val scenario2 = stub.testResults.find { it.name == "Start kotest specification Scenario 2" }
-      withClue("Scenario 2 must be present") { scenario2 shouldBe scenario2 }
-      scenario2?.status shouldBe Status.PASSED
+      scenario2.shouldNotBeNull().status shouldBe Status.PASSED
+   }
+
+   "Scenario 2 iterations have distinct names and history identifiers" {
+      val stub = AllureTestRunner.runSpec(ExampleFreeSpec::class)
+      val iterations = stub.testResults.filter { it.name.startsWith("Start kotest specification Scenario 2") }
+
+      iterations.map { it.name } shouldBe listOf(
+         "Start kotest specification Scenario 2",
+         "Start kotest specification Scenario 2 [1]",
+         "Start kotest specification Scenario 2 [2]",
+      )
+      iterations.map { it.historyId }.distinct() shouldHaveSize 3
+      iterations.map { it.testCaseId }.distinct() shouldHaveSize 3
+      iterations.map { it.fullName }.distinct() shouldHaveSize 3
    }
 
    "Scenario 1 has at least one FAILED iteration because step 2 fails on --2--" {

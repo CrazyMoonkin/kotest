@@ -1,6 +1,7 @@
 package io.kotest.extensions.allure.helper
 
 import io.kotest.engine.test.TestResult
+import io.kotest.engine.extensions.ExtensionException
 import io.qameta.allure.model.Status
 import io.qameta.allure.model.Status.BROKEN
 import io.qameta.allure.model.Status.FAILED
@@ -21,7 +22,7 @@ internal object AllureStatusMapper {
 
    internal fun TestResult.toAllure(): Pair<Status, StatusDetails> {
       val status = when (this) {
-         is TestResult.Error -> BROKEN
+         is TestResult.Error -> if (errorOrNull.isAborted()) SKIPPED else BROKEN
          is TestResult.Failure -> FAILED
          is TestResult.Ignored -> SKIPPED
          is TestResult.Success -> PASSED
@@ -92,6 +93,12 @@ internal object AllureStatusMapper {
    private val Status?.isBrokenOrFailed: Boolean get() = this in brokenOrFailed
 
    private val Status?.isNotPassed get() = this != PASSED
+
+   // The engine wraps exceptions raised by beforeAny, including our skip-on-failure abort.
+   // Do not search arbitrary cause chains: other failures may merely contain an abort as a cause.
+   private fun Throwable?.isAborted(): Boolean =
+      this is TestAbortedException ||
+         (this is ExtensionException.BeforeAnyException && cause is TestAbortedException)
 
    private fun Throwable.readStackTrace(): String {
       val stringWriter = StringWriter()

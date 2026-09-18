@@ -1,6 +1,7 @@
 package io.kotest.extensions.allure.helper
 
 import io.kotest.core.test.TestCase
+import io.kotest.core.spec.Spec
 import io.qameta.allure.model.Label
 import io.qameta.allure.util.ResultsUtils
 import io.kotest.extensions.allure.api.KotestAllureConstant
@@ -8,6 +9,7 @@ import io.kotest.extensions.allure.api.KotestAllureConstant.Var.TEST_NAME_AUTO_C
 import io.kotest.extensions.allure.api.KotestAllureExecution.bestName
 import io.kotest.extensions.allure.helper.AllureConfig.prop
 import io.kotest.extensions.allure.helper.meta.AllureMetadata
+import kotlin.reflect.KClass
 
 /**
  * Populates Allure [AllureTestResult] / [AllureStepResult] from Kotest [TestCase] data:
@@ -25,6 +27,7 @@ internal object AllureResultPopulator {
       test: TestCase,
       meta: AllureMetadata,
       iteration: Int = 0,
+      specClass: KClass<out Spec> = test.spec::class,
    ) {
       val suffix = " [$iteration]".takeIf { iteration >= 1 }.orEmpty()
       val index = "$iteration".takeIf { iteration >= 1 }.orEmpty()
@@ -36,7 +39,7 @@ internal object AllureResultPopulator {
       fullName = test.descriptor.bestName().allureMetaCleanUp() + index
       testCaseId = test.descriptor.bestName().allureMetaCleanUp() + index
       historyId = test.descriptor.bestName().allureMetaCleanUp() + index
-      labels = testCaseLabels(test, meta)
+      labels = testCaseLabels(test, meta, specClass)
       links = meta.allLinks
    }
 
@@ -59,8 +62,8 @@ internal object AllureResultPopulator {
             .trim()
       else this
 
-   private fun testCaseLabels(testCase: TestCase, metadata: AllureMetadata): List<Label> {
-      val pkgName = testCase.spec::class.java.`package`.name
+   private fun testCaseLabels(testCase: TestCase, metadata: AllureMetadata, specClass: KClass<out Spec>): List<Label> {
+      val pkgName = specClass.java.`package`.name
 
       return listOfNotNull(
          ResultsUtils.createSuiteLabel(testCase.descriptor.spec().id.value),

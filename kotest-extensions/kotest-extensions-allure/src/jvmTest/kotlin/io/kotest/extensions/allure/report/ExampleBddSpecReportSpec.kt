@@ -3,12 +3,26 @@ package io.kotest.extensions.allure.report
 import io.kotest.assertions.withClue
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.collections.shouldContain
+import io.kotest.matchers.collections.shouldHaveSize
+import io.qameta.allure.model.Status
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import io.kotest.extensions.allure.template.ExampleBddSpec
 import io.kotest.extensions.allure.util.AllureTestRunner
 
 class ExampleBddSpecReportSpec : FreeSpec({
+
+   "steps aborted after a failure are SKIPPED and preserve the scenario failure" {
+      val stub = AllureTestRunner.runSpec(ExampleBddSpec::class)
+
+      stub.testResults shouldHaveSize 2
+      stub.testResults.forEach { result ->
+         result.steps.map { it.status } shouldBe listOf(Status.PASSED, Status.FAILED, Status.SKIPPED)
+         result.status shouldBe Status.FAILED
+         result.statusDetails.message shouldContain "Step error1"
+         result.steps.last().statusDetails.message shouldContain "Previous step was failed"
+      }
+   }
 
    "@Epic annotation produces epic label" {
       val stub = AllureTestRunner.runSpec(ExampleBddSpec::class)

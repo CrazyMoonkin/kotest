@@ -141,7 +141,8 @@ object KotestAllureListener : ProjectListener,
          type = TestType.Test
       )
 
-      state.startScenario(informationTestCase)
+      // The placeholder must not determine the result's container or annotation metadata.
+      state.startScenario(informationTestCase, kclass.java.asSubclass(Spec::class.java).kotlin)
       state.stopScenario(informationTestCase, testResult)
 
       allure.stopTestContainer(specContainerUuid)

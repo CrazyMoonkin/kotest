@@ -7,9 +7,11 @@ import io.kotest.core.source.SourceRef.ClassLineSource
 import io.kotest.core.source.SourceRef.ClassSource
 import io.kotest.core.source.SourceRef.None
 import io.kotest.core.test.TestCase
+import io.kotest.core.spec.Spec
 import io.kotest.engine.test.TestResult
 import io.kotest.engine.test.TestResult.Success
 import io.qameta.allure.model.StepResult
+import io.qameta.allure.model.Status
 import io.kotest.extensions.allure.api.KotestAllureConstant.Var.DATA_DRIVEN_SUPPORT
 import io.kotest.extensions.allure.api.KotestAllureExecution.allure
 import io.kotest.extensions.allure.api.KotestAllureExecution.containerUuid
@@ -22,6 +24,7 @@ import io.kotest.extensions.allure.helper.AllureStatusMapper.updateStatus
 import io.kotest.extensions.allure.helper.meta.AllureMetadata
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.reflect.KClass
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
@@ -38,7 +41,7 @@ internal class AllureExecutionState {
    private val testUuidMap: MutableMap<Descriptor, String> = ConcurrentHashMap()
    private val iterationMap: MutableMap<Descriptor, Iteration> = ConcurrentHashMap()
 
-   internal fun startScenario(testCase: TestCase): String =
+   internal fun startScenario(testCase: TestCase, specClass: KClass<out Spec> = testCase.spec::class): String =
       testUuidMap.computeIfAbsent(testCase.descriptor) { uuid() }
          .also { uuid ->
             val index = when (dataDrivenSupport) {
@@ -50,9 +53,9 @@ internal class AllureExecutionState {
 
                false -> 0
             }
-            val metadata = AllureMetadata(testCase.spec::class, testCase.descriptor)
-            val result = AllureTestResult().apply { updateTestResult(uuid, testCase, metadata, index) }
-            allure.scheduleTestCase(testCase.spec.containerUuid, result)
+            val metadata = AllureMetadata(specClass, testCase.descriptor)
+            val result = AllureTestResult().apply { updateTestResult(uuid, testCase, metadata, index, specClass) }
+            allure.scheduleTestCase(specClass.containerUuid, result)
             allure.startTestCase(uuid)
          }
 
@@ -96,15 +99,16 @@ internal class AllureExecutionState {
          stopScenario(testCase, testResult)
          return
       }
-      allure.updateStep(uuid) { it.updateStatus(testResult.toAllure()) }
+      val statusAndDetails = testResult.toAllure()
+      allure.updateStep(uuid) { it.updateStatus(statusAndDetails) }
       allure.stopStep(uuid)
-      if (testResult.needPassOnTop) {
+      if (statusAndDetails.first == Status.FAILED || statusAndDetails.first == Status.BROKEN) {
          testCase.descriptor.parents().forEach { description ->
             val parentUuid = testUuidMap[description] ?: return@forEach
             if (description.isRootTest())
-               allure.updateTestCase(parentUuid) { it.updateStatus(testResult.toAllure()) }
+               allure.updateTestCase(parentUuid) { it.updateStatus(statusAndDetails) }
             else
-               allure.updateStep(parentUuid) { it.updateStatus(testResult.toAllure()) }
+               allure.updateStep(parentUuid) { it.updateStatus(statusAndDetails) }
          }
       }
       testUuidMap.remove(testCase.descriptor)
@@ -130,7 +134,8 @@ internal class AllureExecutionState {
       if (testCase.isNewIteration(iteration)) {
          stopScenario(iteration.scenario, Success(0.milliseconds), false)
          startScenario(iteration.scenario)
-         iterationMap[scenario] = iteration.startedAt(testCase)
+         // startScenario has advanced the index; retain that new iteration state.
+         iterationMap.computeIfPresent(scenario) { _, current -> current.startedAt(testCase) }
       }
    }
 
@@ -141,14 +146,6 @@ internal class AllureExecutionState {
       get() = descriptor.parents().firstOrNull { it is TestDescriptor }
 
    private val TestCase.parentUuid: String? get() = testUuidMap[descriptor.parent]
-
-   private val TestResult.needPassOnTop: Boolean
-      get() = when (this) {
-         is TestResult.Error -> true
-         is TestResult.Failure -> true
-         is TestResult.Ignored -> false
-         is Success -> false
-      }
 }
 
 private data class Iteration(val index: Int, val scenario: TestCase, val startLineNumber: Int) {
